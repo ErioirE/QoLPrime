@@ -1,0 +1,3 @@
+displayName = QoL Prime
+author = Cracatoa
+version = 0.1
