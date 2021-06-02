@@ -23,7 +23,7 @@ namespace QoLPrime.Items
 		public override void SetStaticDefaults() 
 		{
 			// DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
-			Tooltip.SetDefault($"\"Salutations, Exile.\"{Environment.NewLine}(Shots from this weapon have 50% less damage and knockback.){Environment.NewLine}Use time: {Item.useTime}");
+			Tooltip.SetDefault($"(Shots from this weapon have 50% less damage and knockback.){Environment.NewLine}Use time: {Item.useTime}{Environment.NewLine}It defines \"Bat\" as \"any winged mammal\".{Environment.NewLine}\"Salutations, Exile.\"");
 			DisplayName.SetDefault("Quill Rain, Bat Bane");
 
 		}
@@ -85,7 +85,7 @@ namespace QoLPrime.Items
 		}
 		public override void UpdateInventory(Player player)
 		{
-			player.moveSpeed = originalMovespeed * 10;
+			//player.moveSpeed = originalMovespeed * 10;
 
 			if (projectile == null)
             {
@@ -105,7 +105,7 @@ namespace QoLPrime.Items
 				projectile.ignoreWater = true;
 				//projectile.Center = new Vector2(player.position.X,player.position.Y-1500);
 			}
-
+			
 			float distancex = Math.Abs(Main.MouseWorld.X - player.Center.X);
 			float distancey = Math.Abs(Main.MouseWorld.Y - player.Center.Y);
 			Rectangle mouseBox = new Rectangle((int)Main.MouseWorld.X-10, (int)Main.MouseWorld.Y-10,20,20);

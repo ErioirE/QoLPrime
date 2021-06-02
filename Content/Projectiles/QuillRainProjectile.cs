@@ -42,8 +42,8 @@ namespace QoLPrime.Content.Projectiles
 		public override void AI()
 		{
 			Random rand = new Random();
-			NPC closest = FindClosestNPC(70);
-			float projSpeed = 20f;
+			NPC closest = FindClosestNPC(75);
+			float projSpeed = 10f;
 
 			if (closest == null)
 			{
@@ -82,6 +82,7 @@ namespace QoLPrime.Content.Projectiles
 			}
             else
             {
+				Projectile.extraUpdates = 0;
                 if (!boosted)
                 {
 					Projectile.damage += 2;
@@ -111,7 +112,7 @@ namespace QoLPrime.Content.Projectiles
 		}
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
 		{
-            if (target.FullName.Contains("Bat"))
+            if (target.aiStyle == NPCAIStyleID.Bat)
             {
 				target.AddBuff(BuffID.Ichor,250);
 				target.AddBuff(BuffID.Poisoned, 250);
@@ -136,7 +137,7 @@ namespace QoLPrime.Content.Projectiles
 				// 4. can take damage (e.g. moonlord core after all it's parts are downed)
 				// 5. hostile (!friendly)
 				// 6. not immortal (e.g. not a target dummy)
-				if (target.CanBeChasedBy() && target.FullName.Contains("Bat"))
+				if (target.CanBeChasedBy() && target.aiStyle == NPCAIStyleID.Bat)
 				{
 					// The DistanceSquared function returns a squared distance between 2 points, skipping relatively expensive square root calculations
 					float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, Projectile.Center);
