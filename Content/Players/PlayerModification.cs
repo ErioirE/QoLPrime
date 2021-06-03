@@ -21,7 +21,6 @@ namespace QoLPrime.Content.Players
 		
 		public override void PreUpdate()
         {
-			
 			if (!hasPrinted)
 			{
 				/*Player.inventory[1] = new Item(ItemID.Marrow);
@@ -29,14 +28,14 @@ namespace QoLPrime.Content.Players
 				hasPrinted = true;
 				*/
 			}
-			//Main.NewText($"{string.Join(',',projectile)}");
+			Main.NewText($"{string.Join(',',Player.talkNPC)}");
 
-			if (Player.moveSpeed <= originalMoveSpeed + 5)
-			{
-				Player.moveSpeed = originalMoveSpeed * 7;
-			}
+			//if (Player.moveSpeed <= originalMoveSpeed + 5)
+			//{
+			//	Player.moveSpeed = originalMoveSpeed * 7;
+			//}
 			//Player.QuickStackAllChests();
-			if (backpackEnabled) {
+			if (backpackEnabled && Player.talkNPC < 0) {
 				if (backpackEnabled && projectile == null || projectile.type != ProjectileID.VoidLens)
 				{
 
