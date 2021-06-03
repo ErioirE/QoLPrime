@@ -13,12 +13,14 @@ namespace QoLPrime.Content.Projectiles
 		int collisionCount = 0;
 		bool hasAccelerated = false;
 		double momentum = 1000;
-		float speedMod = 1.3f;
+		float speedMod = 1.2f;
 		int lastNumHits = 0;
+		float brightness = 0.3f;
 		Vector2 originalVelocity;
-		static float defaultDetectRadius = 45f;
+		static float defaultDetectRadius = 65f;
 		float maxDetectRadius = defaultDetectRadius; // The maximum radius at which a projectile can detect a target
 		int lastHit = 0;
+		Random rand = new Random();
 		public override void SetStaticDefaults() {
 			DisplayName.SetDefault("Revenent's Revenge Projectile"); // Name of the projectile. It can be appear in chat
 			ProjectileID.Sets.CountsAsHoming[Projectile.type] = true; // Tell the game that it is a homing projectile
@@ -38,17 +40,23 @@ namespace QoLPrime.Content.Projectiles
 			Projectile.light = .3f; // How much light emit around the projectile
 			Projectile.tileCollide = false; // Can the projectile collide with tiles?
 			Projectile.timeLeft = 130; //The live time for the projectile (60 = 1 second, so 600 is 10 seconds)
-			Projectile.extraUpdates = 5;
-			Projectile.penetrate = 4;
-			Projectile.maxPenetrate = 4;
+			Projectile.extraUpdates = 4;
+			int maxChains = rand.Next(3,8);
+			Projectile.penetrate = maxChains;
+			Projectile.maxPenetrate = maxChains;
+			
 		}
 
         // Custom AI
         public override void AI() {
+			AddLightToScale(Projectile.position,Color.BlueViolet.ToVector3(),brightness);
+			
+			brightness = (float)Math.Round((float)this.Projectile.timeLeft / 100f);
 			if (!hasAccelerated)
 			{
 				originalVelocity = Projectile.velocity;
 				hasAccelerated = true;
+				//Main.NewText(Projectile.maxPenetrate);
 			}
 			// The speed at which the projectile moves towards the target
 			float projSpeed = 5f;// Trying to find NPC closest to the projectile
@@ -64,7 +72,6 @@ namespace QoLPrime.Content.Projectiles
 					lastHit = closestNPC.life;
 				}
 				speedMod = reduceSpeed(speedMod, 0.5f, 0.5f);
-				Projectile.timeLeft += 60;
 				Projectile.velocity.X *= (float)rand.Next(2, 4);
 				Projectile.velocity.Y *= (float)rand.Next(2, 4);
 				lastNumHits = Projectile.numHits;
@@ -80,7 +87,11 @@ namespace QoLPrime.Content.Projectiles
 
 
 				if (Projectile.numHits > 0) {
-					maxDetectRadius = (defaultDetectRadius * (4f * Projectile.numHits));
+					maxDetectRadius = (defaultDetectRadius +(Projectile.numHits*150));
+                    if (maxDetectRadius > 500)
+                    {
+						maxDetectRadius = 500;
+                    }
 				}
 				Tile tileAtLocation = null;
 				try
@@ -159,9 +170,14 @@ namespace QoLPrime.Content.Projectiles
         }
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
 		{
+			this.Projectile.timeLeft += damage/2;
+
 				target.AddBuff(BuffID.Ichor, 150);	
 		}
-
+		public void AddLightToScale(Vector2 position, Vector3 rgb,float multiplier)
+        {
+			Lighting.AddLight(Projectile.position, new Vector3(rgb.X*multiplier, rgb.Y*multiplier, rgb.Z*multiplier));
+		}
 		// Finding the closest NPC to attack within maxDetectDistance range
 		// If not found then returns null
 		public NPC FindClosestNPC(float maxDetectDistance, int lastHit) {

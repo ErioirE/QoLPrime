@@ -19,7 +19,7 @@ namespace QoLPrime.Items
 {
 	public class QuillRain : ModItem
 	{
-		float originalMovespeed = Main.LocalPlayer.moveSpeed;
+
 		public override void SetStaticDefaults() 
 		{
 			// DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
@@ -31,7 +31,7 @@ namespace QoLPrime.Items
 		public override string Texture => "QoLPrime/Assets/Textures/Items/QuillRainTerraria";
 		public int ammoUsed;
 		public bool hasPrinted = false;
-		static Projectile projectile;
+
 		public override void SetDefaults()
 		{
 			bool canShoot = true;
@@ -51,16 +51,19 @@ namespace QoLPrime.Items
 			Item.shoot = AmmoID.Arrow;//ModContent.ProjectileType<Content.Projectiles.RevenantRevengeProjectile>();
 			Item.useAmmo = AmmoID.Arrow;
 			Item.value = 00160000;
-	
+			
 			
 
 			// This Ammo is nonspecific. I want to modify what it shoots, however.
 			//Item.useAmmo = ModContent.ItemType<ExampleCustomAmmo>();
 		}
-
+		public override bool ConsumeAmmo(Player player)
+		{
+			return Main.rand.NextFloat() >= .55f;
+		}
 		public override bool Shoot(Player player, ProjectileSource_Item_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
 		{
-
+			
 			
 			/*var ProjectileUsed = Projectile.NewProjectileDirect(source,Vector2.Zero,Vector2.Zero,type,damage,knockback);
 			if (ProjectileUsed != null) {
@@ -85,73 +88,7 @@ namespace QoLPrime.Items
 		}
 		public override void UpdateInventory(Player player)
 		{
-			//player.moveSpeed = originalMovespeed * 10;
-
-			if (projectile == null)
-            {
-				projectile = Projectile.NewProjectileDirect(player.GetProjectileSource_Item(Item), player.position, Vector2.Zero, ProjectileID.VoidLens, 0, 0);
-				projectile.timeLeft = int.MaxValue;
-				projectile.ignoreWater = true;
-			}
-            else
-            {
-				projectile.position.X = player.position.X;
-				projectile.position.Y = player.position.Y;
-				projectile.height = 10000;
-				projectile.width = 1;
-				projectile.alpha = 255;
-				projectile.light = -1;
-				projectile.Opacity = 0;
-				projectile.ignoreWater = true;
-				//projectile.Center = new Vector2(player.position.X,player.position.Y-1500);
-			}
-			
-			float distancex = Math.Abs(Main.MouseWorld.X - player.Center.X);
-			float distancey = Math.Abs(Main.MouseWorld.Y - player.Center.Y);
-			Rectangle mouseBox = new Rectangle((int)Main.MouseWorld.X-10, (int)Main.MouseWorld.Y-10,20,20);
-			if (projectile.Hitbox.Intersects(mouseBox))
-            {
-				projectile.position.X += 50;
-				
-			}
-            else
-            {
-				projectile.position.X = player.position.X;
-			}
-            if (player.chest == -1)
-            {
-				player.chest = -5;
-            }
-
-            
-			
-			if (player.chest == -5)
-            {
-				//player.chest = -5;
-
-				player.voidLensChest = projectile.identity;
-
-				Main.projectile[player.voidLensChest] = projectile;
-
-				//player.chestX = (int)(((double)player.position.X + (double)player.width * 0.5) / 16.0);
-				//player.chestY = (int)(((double)player.position.Y + (double)player.height * 0.5) / 16.0);
-				//IProjectileSource source;
-				//source = player.GetProjectileSource_Item(Item);
-				//Projectile.NewProjectile(source,player.position,Vector2.Zero,734,0,0);
-				/*if (Main.projectile[player.voidLensChest]!= null) {
-					Main.projectile[player.voidLensChest].active = true;
-					Main.projectile[player.voidLensChest].type = 734;
-				}*/
-				//player.voidLensChest = 0;
-
-				player.IsVoidVaultEnabled = true;
-
-				//player.voidLensChest = 1;
-				//hasPrinted = true;
-			}
-
-
-
+           
 		}
 
 		public override void AddRecipes() 
@@ -164,5 +101,7 @@ namespace QoLPrime.Items
 		}
 
 	}
+
 	
+
 }

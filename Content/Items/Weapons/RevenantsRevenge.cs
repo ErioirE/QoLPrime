@@ -36,7 +36,7 @@ namespace QoLPrime.Items
 			Item.width = 26;
 			Item.height = 26;
 			Item.scale = 1f;
-			Item.shootSpeed = 80f;
+			Item.shootSpeed = 70f;
 			Item.crit = 20;
 			Item.shoot = AmmoID.Arrow;//ModContent.ProjectileType<Content.Projectiles.RevenantRevengeProjectile>();
 			Item.useAmmo = AmmoID.Arrow;
