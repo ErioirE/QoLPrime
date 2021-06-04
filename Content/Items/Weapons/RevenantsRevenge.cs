@@ -25,8 +25,8 @@ namespace QoLPrime.Items
 		public override void SetDefaults()
 		{
 			bool canShoot = true;
-			Item.useTime = 26;
-			Item.useAnimation = 26;
+			Item.useTime = 20;
+			Item.useAnimation = 20;
 			Item.useStyle = ItemUseStyleID.Shoot;
 			Item.UseSound = SoundID.Item5;
 			Item.rare = ItemRarityID.Lime;
@@ -36,7 +36,7 @@ namespace QoLPrime.Items
 			Item.width = 26;
 			Item.height = 26;
 			Item.scale = 1f;
-			Item.shootSpeed = 70f;
+			Item.shootSpeed = 50f;
 			Item.crit = 20;
 			Item.shoot = AmmoID.Arrow;//ModContent.ProjectileType<Content.Projectiles.RevenantRevengeProjectile>();
 			Item.useAmmo = AmmoID.Arrow;

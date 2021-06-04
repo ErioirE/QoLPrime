@@ -40,7 +40,7 @@ namespace QoLPrime.Content.Projectiles
 			Projectile.light = .3f; // How much light emit around the projectile
 			Projectile.tileCollide = false; // Can the projectile collide with tiles?
 			Projectile.timeLeft = 130; //The live time for the projectile (60 = 1 second, so 600 is 10 seconds)
-			Projectile.extraUpdates = 4;
+			Projectile.extraUpdates = 3;
 			int maxChains = rand.Next(3,8);
 			Projectile.penetrate = maxChains;
 			Projectile.maxPenetrate = maxChains;
