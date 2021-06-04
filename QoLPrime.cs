@@ -47,9 +47,11 @@ namespace QoLPrime
 			MonoModHooks.RequestNativeAccess();
 			
 			
-			Hook hook = new Hook(typeof(Terraria.Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
-			hook.Apply();
+			Hook chestRangeHook = new Hook(typeof(Terraria.Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
+			chestRangeHook.Apply();
 			On.Terraria.Player.HandleBeingInChestRange += PlayerModification.chestRangeHijack;
+			On.Terraria.UI.ChestUI.QuickStack += PlayerModification.QuickStackHijack;
+			On.Terraria.Player.QuickStackAllChests += PlayerModification.quickStackAllHijack;
 		}
 
 		public override void Unload()
