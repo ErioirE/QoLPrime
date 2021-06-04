@@ -103,12 +103,13 @@ namespace QoLPrime.Content.Players
 		}
 		public static void QuickStackHijack(On.Terraria.UI.ChestUI.orig_QuickStack orig)
         {
-			orig();
-            if (backpackEnabled)
-            {
-                Player player = Main.player[Main.myPlayer];
-                
 
+			Player player = Main.player[Main.myPlayer];
+			int startingChest = player.chest;
+			orig();
+			player.chest = startingChest;
+			if (backpackEnabled)
+            {
                 Item[] inventory = player.bank4.item;
                 Item[] item = player.bank.item;
                 if (player.chest > -1)
@@ -152,7 +153,7 @@ namespace QoLPrime.Content.Players
 
                 for (int j = 10; j < num; j++)
                 {
-                    if (list.Contains(inventory[j].netID) && !inventory[j].favorited)
+                    if (list.Contains(inventory[j].netID))
                     {
                         dictionary.Add(j, inventory[j].netID);
                     }
@@ -393,7 +394,7 @@ namespace QoLPrime.Content.Players
                 {
 					Player.chest = -5;
 					Main.NewText($"{string.Join(',', backpackInventory[0].Name)}");
-					Player.QuickStackAllChests();
+					
 				}
                 else
                 {
@@ -403,6 +404,7 @@ namespace QoLPrime.Content.Players
             if (QoLPrime.printSpawnRate.JustReleased)
             {
 				Main.NewText($"{QoLPrime.checkSpawnRate}");
+				Player.QuickStackAllChests();
 			}
             base.ProcessTriggers(triggersSet);
         }
