@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -19,8 +20,22 @@ namespace QoLPrime.Content.Players
 		float originalMoveSpeed = Main.LocalPlayer.moveSpeed;
 		float originalTileSpeed = Main.LocalPlayer.tileSpeed;
 		
+		//On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
+		public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Terraria.Player self)
+        {
+			if (self.chest != -5) {
+
+
+				orig(self);
+
+			}
+        }
 		public override void PreUpdate()
         {
+			if (Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
+			{
+				Player.chest = -5;
+			}
 			if (!hasPrinted)
 			{
 				/*Player.inventory[1] = new Item(ItemID.Marrow);
@@ -28,14 +43,14 @@ namespace QoLPrime.Content.Players
 				hasPrinted = true;
 				*/
 			}
-			Main.NewText($"{string.Join(',',Player.talkNPC)}");
+			
 
 			//if (Player.moveSpeed <= originalMoveSpeed + 5)
 			//{
 			//	Player.moveSpeed = originalMoveSpeed * 7;
 			//}
 			//Player.QuickStackAllChests();
-			if (backpackEnabled && Player.talkNPC < 0) {
+			/*if (backpackEnabled && Player.talkNPC < 0) {
 				if (backpackEnabled && projectile == null || projectile.type != ProjectileID.VoidLens)
 				{
 
@@ -103,10 +118,10 @@ namespace QoLPrime.Content.Players
 					//IProjectileSource source;
 					//source = Player.GetProjectileSource_Item(Item);
 					//Projectile.NewProjectile(source,Player.position,Vector2.Zero,734,0,0);
-					/*if (Main.projectile[Player.voidLensChest]!= null) {
-						Main.projectile[Player.voidLensChest].active = true;
-						Main.projectile[Player.voidLensChest].type = 734;
-					}*/
+					//if (Main.projectile[Player.voidLensChest]!= null) {
+					//	Main.projectile[Player.voidLensChest].active = true;
+					//	Main.projectile[Player.voidLensChest].type = 734;
+					//}
 					//Player.voidLensChest = 0;
 
 					Player.IsVoidVaultEnabled = true;
@@ -114,7 +129,7 @@ namespace QoLPrime.Content.Players
 					//Player.voidLensChest = 1;
 					//hasPrinted = true;
 				}
-			}
+			}*/
             else
             {
 				//Player.chest = -1;

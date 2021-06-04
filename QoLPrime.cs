@@ -7,6 +7,9 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Terraria;
+using MonoMod.RuntimeDetour;
+using QoLPrime.Content.Players;
+using FluentIL;
 
 namespace QoLPrime
 {
@@ -16,6 +19,7 @@ namespace QoLPrime
 		public static int currentBiome;
 		public static ModHotKey backpackToggle;
 		public static ModHotKey printSpawnRate;
+		public static MethodInfo chestMethodInfo;
 
 		public static string checkSpawnRate { get; private set; }
 		public static QoLPrime Instance { get; private set; }
@@ -40,6 +44,12 @@ namespace QoLPrime
 		{
 			backpackToggle = RegisterHotKey("Backpack Toggle", "OemTilde");
 			printSpawnRate = RegisterHotKey("Print Spawn Rate", "OemBackslash");
+			MonoModHooks.RequestNativeAccess();
+			
+			
+			Hook hook = new Hook(typeof(Terraria.Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
+			hook.Apply();
+			On.Terraria.Player.HandleBeingInChestRange += PlayerModification.chestRangeHijack;
 		}
 
 		public override void Unload()
