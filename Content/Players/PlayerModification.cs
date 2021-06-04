@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Terraria;
+using Terraria.Audio;
 using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -22,31 +23,18 @@ namespace QoLPrime.Content.Players
 		//On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
 		public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Terraria.Player self)
         {
-			int chestToForce = 0;
+			if (self.chest != -5) {
 
-            if (!(Main.LocalPlayer.talkNPC >=0))
-            {
-				chestToForce = -5;
-            }
-            else
-            {
-				chestToForce = Main.LocalPlayer.chest;
-            }
 
-			orig(self);
+				orig(self);
 
-			if (chestToForce == -5)
-            {
-				Main.LocalPlayer.chest = chestToForce;
-				Main.NewText($"{"Sneakedy snek'd"}");
 			}
-
         }
 		public override void PreUpdate()
         {
-			if (Player.chest == -1 && Player.talkNPC < 0 && Player.controlInv)
+			if (Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
 			{
-				//Player.chest = -5;
+				Player.chest = -5;
 			}
 			if (!hasPrinted)
 			{
