@@ -38,6 +38,7 @@ namespace QoLPrime.Content.Players
 			orig(self);
 			if (backpackEnabled)
 			{
+				
 				int num2 = 17;
 				int num3 = (int)(self.Center.X / 16f);
 				int num4 = (int)(self.Center.Y / 16f);
@@ -62,6 +63,7 @@ namespace QoLPrime.Content.Players
 
 							if (num5 < 0 && (new Vector2(j * 16 + 8, k * 16 + 8) - self.Center).Length() < 250f)
 							{
+								Main.NewText($"Items to QS from backpack, attempting detour...");
 								int num6 = self.chest;
 								self.chest = num5;
 								ChestUI.QuickStack();
@@ -73,9 +75,9 @@ namespace QoLPrime.Content.Players
 
 				if (Main.netMode == 1)
 				{
-					for (int l = 10; l < 40; l++)
+					for (int l = 0; l < 40; l++)
 					{
-						if (self.bank4.item[l].type > 0 && self.bank4.item[l].stack > 0 && !self.bank4.item[l].favorited && !self.bank4.item[l].IsACoin)
+						if (self.bank4.item[l].type > 0 && self.bank4.item[l].stack > 0 && !self.bank4.item[l].IsACoin)
 						{
 							NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)self.bank4.item[l].prefix);
 							NetMessage.SendData(85, -1, -1, null, l);
@@ -87,18 +89,24 @@ namespace QoLPrime.Content.Players
 				}
 
 				bool flag = false;
-				for (int m = 10; m < 40; m++)
+				for (int m = 0; m < 40; m++)
 				{
-					if (self.bank4.item[m].type > 0 && self.bank4.item[m].stack > 0 && !self.bank4.item[m].favorited && !self.bank4.item[m].IsACoin)
+					
+					if (self.bank4.item[m].type > 0 && self.bank4.item[m].stack > 0 && !self.bank4.item[m].IsACoin)
 					{
 						int type = self.bank4.item[m].type;
 						int stack = self.bank4.item[m].stack;
-						
-						self.bank4.item[m] = Chest.PutItemInNearbyChest(self.bank4.item[m], self.Center);
+						Main.NewText($"Items to QS from backpack, attempting detour...{self.bank4.item[m].Name} * {self.bank4.item[m].stack}");
+
+						Item itemTransferred = Chest.PutItemInNearbyChest(self.bank4.item[m], self.Center);
+						Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
+						self.bank4.item[m] = itemTransferred;
 						if (self.bank4.item[m].type != type || self.bank4.item[m].stack != stack)
 							flag = true;
 					}
 				}
+				if (flag)
+					SoundEngine.PlaySound(7);
 			}
 		}
 		public static void QuickStackHijack(On.Terraria.UI.ChestUI.orig_QuickStack orig)
@@ -274,7 +282,8 @@ namespace QoLPrime.Content.Players
 		public override void PreUpdate()
         {
 			backpackInventory = Player.bank4.item.ToList();
-			if (Terraria.Main.playerInventory &&Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
+
+			if (PlayerInput.Triggers.JustPressed.Inventory && Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
 			{
 				Player.chest = -5;
 			}
@@ -399,7 +408,7 @@ namespace QoLPrime.Content.Players
                 else
                 {
 					Player.chest = -1;
-                }
+				}
             }
             if (QoLPrime.printSpawnRate.JustReleased)
             {

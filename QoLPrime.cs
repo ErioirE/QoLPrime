@@ -10,6 +10,12 @@ using Terraria;
 using MonoMod.RuntimeDetour;
 using QoLPrime.Content.Players;
 using FluentIL;
+using Terraria.GameContent;
+using Terraria.UI.Gamepad;
+using Microsoft.Xna.Framework;
+using Terraria.GameInput;
+using Terraria.Localization;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace QoLPrime
 {
@@ -47,16 +53,59 @@ namespace QoLPrime
 			MonoModHooks.RequestNativeAccess();
 			
 			
-			Hook chestRangeHook = new Hook(typeof(Terraria.Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
+			Hook chestRangeHook = new Hook(typeof(Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
 			chestRangeHook.Apply();
+			Hook drawInvHook = new Hook(typeof(Main).GetMethod("DrawInventory", BindingFlags.NonPublic | BindingFlags.Instance), typeof(QoLPrime).GetMethod("drawInventoryHijack"));
+			drawInvHook.Apply();
 			On.Terraria.Player.HandleBeingInChestRange += PlayerModification.chestRangeHijack;
 			On.Terraria.UI.ChestUI.QuickStack += PlayerModification.QuickStackHijack;
 			On.Terraria.Player.QuickStackAllChests += PlayerModification.quickStackAllHijack;
+			On.Terraria.Main.DrawInventory += QoLPrime.drawInventoryHijack;
 		}
 
 		public override void Unload()
 		{
 			QoLPrime.Instance = null;
+		}
+
+		public static void drawInventoryHijack(On.Terraria.Main.orig_DrawInventory orig, Main self)
+		{
+				orig(self);
+
+
+			int num108 = 0;
+			int num109 = 498;
+			int num110 = 410;
+			int num111 = TextureAssets.ChestStack[num108].Width();
+			int num112 = TextureAssets.ChestStack[num108].Height();
+			UILinkPointNavigator.SetPosition(301, new Vector2((float)num109 + (float)num111 * 0.75f, (float)num110 + (float)num112 * 0.75f));
+			if (Main.mouseX >= num109 && Main.mouseX <= num109 + num111 && Main.mouseY >= num110 && Main.mouseY <= num110 + num112 && !PlayerInput.IgnoreMouseInterface)
+			{
+				num108 = 1;
+				if (!Main.allChestStackHover)
+				{
+					SoundEngine.PlaySound(12);
+					Main.allChestStackHover = true;
+				}
+
+				if (Main.mouseLeft && Main.mouseLeftRelease)
+				{
+					Main.mouseLeftRelease = false;
+					Main.player[Main.myPlayer].QuickStackAllChests();
+					Recipe.FindRecipes();
+				}
+
+				Main.player[Main.myPlayer].mouseInterface = true;
+			}
+			else if (Main.allChestStackHover)
+			{
+				SoundEngine.PlaySound(12);
+				Main.allChestStackHover = false;
+			}
+
+			Main.spriteBatch.Draw(TextureAssets.ChestStack[num108].Value, new Vector2(num109, num110), new Microsoft.Xna.Framework.Rectangle(0, 0, TextureAssets.ChestStack[num108].Width(), TextureAssets.ChestStack[num108].Height()), Microsoft.Xna.Framework.Color.White, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+			if (!Main.mouseText && num108 == 1)
+				self.MouseText(Language.GetTextValue("GameUI.QuickStackToNearby"), 0, 0);
 		}
 	}
 	internal enum ExampleModMessageType : byte
