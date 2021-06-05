@@ -21,7 +21,7 @@ namespace QoLPrime.Items
 	public class QuillRain : ModItem
 	{
 		public int BatsSlain = 0;
-		private int killsRequired = 1000;
+		private int killsRequired = 500;
 		public override void SetStaticDefaults() 
 		{
 			// DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
