@@ -23,9 +23,10 @@ namespace QoLPrime
 	{
 		public const string AssetPath = "QoLPrime/Assets/";
 		public static int currentBiome;
+
 		public static ModHotKey backpackToggle;
 		public static ModHotKey printSpawnRate;
-		public static MethodInfo chestMethodInfo;
+		public static ModHotKey quickStackHotkey;
 
 		public static string checkSpawnRate { get; private set; }
 		public static QoLPrime Instance { get; private set; }
@@ -48,10 +49,12 @@ namespace QoLPrime
         }
 		public override void Load()
 		{
-			backpackToggle = RegisterHotKey("Backpack Toggle", "OemTilde");
+			quickStackHotkey = RegisterHotKey("Quick Stack/Quick Stack all", "OemSemicolon");
+			backpackToggle = RegisterHotKey("Toggle Backpack", "OemTilde");
 			printSpawnRate = RegisterHotKey("Print Spawn Rate", "OemBackslash");
-			MonoModHooks.RequestNativeAccess();
 			
+
+			MonoModHooks.RequestNativeAccess();
 			
 			Hook chestRangeHook = new Hook(typeof(Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
 			chestRangeHook.Apply();
