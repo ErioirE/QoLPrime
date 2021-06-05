@@ -14,27 +14,26 @@ using Terraria.IO;
 using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 using Terraria.Audio;
 using Microsoft.Xna.Framework.Audio;
+using QoLPrime.Content.Players;
 
 namespace QoLPrime.Items
 {
 	public class QuillRain : ModItem
 	{
-
+		public int BatsSlain = 0;
 		public override void SetStaticDefaults() 
 		{
 			// DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
-			Tooltip.SetDefault($"(Shots from this weapon have 50% less damage and knockback.){Environment.NewLine}Use time: {Item.useTime}{Environment.NewLine}It defines \"Bat\" as \"any winged mammal\".{Environment.NewLine}\"Salutations, Exile.\"");
+			//Tooltip.SetDefault($"(Shots from this weapon have 50% less damage and knockback.){Environment.NewLine}Use time: {Item.useTime}{Environment.NewLine}It defines \"bat\" as \"any winged mammal\".{Environment.NewLine}\"Bats\" exterminated: {BatsSlain}");
 			DisplayName.SetDefault("Quill Rain, Bat Bane");
-
+			
 		}
 
 		public override string Texture => "QoLPrime/Assets/Textures/Items/QuillRainTerraria";
 		public int ammoUsed;
 		public bool hasPrinted = false;
-
 		public override void SetDefaults()
 		{
-			bool canShoot = true;
 			Item.useTime = 4;
 			Item.useAnimation = 16;
 			Item.useStyle = ItemUseStyleID.Shoot;
@@ -51,8 +50,7 @@ namespace QoLPrime.Items
 			Item.shoot = AmmoID.Arrow;//ModContent.ProjectileType<Content.Projectiles.RevenantRevengeProjectile>();
 			Item.useAmmo = AmmoID.Arrow;
 			Item.value = 00160000;
-			
-			
+			Item.knockBack = 1f;
 
 			// This Ammo is nonspecific. I want to modify what it shoots, however.
 			//Item.useAmmo = ModContent.ItemType<ExampleCustomAmmo>();
@@ -63,8 +61,8 @@ namespace QoLPrime.Items
 		}
 		public override bool Shoot(Player player, ProjectileSource_Item_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
 		{
-			
-			
+
+			PlayerModification.mostRecentQuillRain = this;
 			/*var ProjectileUsed = Projectile.NewProjectileDirect(source,Vector2.Zero,Vector2.Zero,type,damage,knockback);
 			if (ProjectileUsed != null) {
 				ProjectileUsed.Kill();
@@ -86,9 +84,30 @@ namespace QoLPrime.Items
 			
 
 		}
+		public override void ModifyTooltips(List<TooltipLine> tooltips)
+		{
+
+
+			tooltips[tooltips.Count - 1] = new TooltipLine(QoLPrime.Instance, "batKillCount", $"Use time: {Item.useTime}{Environment.NewLine}(Shots from this weapon gain 50% less damage and knockback from arrows.){Environment.NewLine}\"Hello! Would you like to destroy some \'bats\' today?\"{Environment.NewLine}\"Bats\" exterminated: {BatsSlain}");
+				
+			
+			return;
+			
+		}
 		public override void UpdateInventory(Player player)
 		{
-           
+            if (this.BatsSlain >= 1000 && Main.hardMode)
+            {
+                if (PlayerModification.GetIndexOfItemInInventory(this, player) is int temp)
+                {
+					var prefix = this.Item.prefix;
+					player.inventory[temp] = new Item(ModContent.ItemType<NightsBlood>());
+					player.inventory[temp].prefix = prefix;
+				}
+				
+            }
+			//this.ModifyTooltips(new List<TooltipLine> { new TooltipLine(QoLPrime.Instance,"name","Blah")});
+			//Item.RebuildTooltip();
 		}
 
 		public override void AddRecipes() 

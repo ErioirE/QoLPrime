@@ -11,19 +11,18 @@ namespace QoLPrime.Content.Projectiles
 {
 	// This Example show how to implement simple homing projectile
 	// Can be tested with ExampleCustomAmmoGun
-	public class QuillRainProjectile : ModProjectile
+	public class NightsBloodProjectile : ModProjectile
 	{
 		float speedMod = 1f;
-		Vector2 originalVelocity;
 		bool boosted = false;
 		bool hasAccelerated = false;
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Quill Rain Projectile"); // Name of the projectile. It can be appear in chat
+			DisplayName.SetDefault("Night's Blood Projectile"); // Name of the projectile. It can be appear in chat
 			ProjectileID.Sets.CountsAsHoming[Projectile.type] = true; // Tell the game that it is a homing projectile
 
 		}
-		public override string Texture => "QoLPrime/Assets/Textures/Items/Quill";
+		public override string Texture => "QoLPrime/Assets/Textures/Items/Night_Arrow";
 		// Setting the default parameters of the projectile
 		// You can check most of Fields and Properties here https://github.com/tModLoader/tModLoader/wiki/Projectile-Class-Documentation
 		public override void SetDefaults()
@@ -36,7 +35,7 @@ namespace QoLPrime.Content.Projectiles
 			Projectile.hostile = false; // Can the projectile deal damage to the player?
 			Projectile.ignoreWater = false; // Is the projectile's speed be influenced by water?
 			Projectile.tileCollide = true; // Can the projectile collide with tiles?
-			Projectile.extraUpdates = 1;
+			Projectile.extraUpdates = 0;
 			
 		}
 
@@ -44,7 +43,7 @@ namespace QoLPrime.Content.Projectiles
 		public override void AI()
 		{
 			Random rand = new Random();
-			NPC closest = FindClosestNPC(75);
+			NPC closest = FindClosestNPC(77);
 			float projSpeed = 10f;
 
 			if (closest == null)
@@ -53,8 +52,8 @@ namespace QoLPrime.Content.Projectiles
 
 				if (!hasAccelerated)
 				{
-					Projectile.damage = Projectile.damage / 2;
-					Projectile.knockBack = Projectile.knockBack / 2;
+					//Projectile.damage = (int)Math.Round(Projectile.damage / 1.5);
+					//Projectile.knockBack = (int)Math.Round(Projectile.knockBack / 1.5);
 					int invert = rand.Next(0, 1);
 					if (invert > 0)
 					{
@@ -84,10 +83,7 @@ namespace QoLPrime.Content.Projectiles
 			}
             else
             {
-				if (!boosted) {
-					Projectile.damage += 2;
-					boosted = true;
-				}
+				
 					
 				
 				// If found, change the velocity of the projectile and turn it in the direction of the target
@@ -111,16 +107,17 @@ namespace QoLPrime.Content.Projectiles
 		}
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
 		{
-            if (target.aiStyle == NPCAIStyleID.Bat)
-            {
-				target.AddBuff(BuffID.Ichor,250);
-				target.AddBuff(BuffID.Poisoned, 250);
-                if (target.life <=0)
-                {
-					PlayerModification.mostRecentQuillRain.BatsSlain += 1;	
-                }
+			target.AddBuff(BuffID.Ichor, 250);
+			if (target.life <= target.lifeMax / 2)
+			{
+				target.AddBuff(BuffID.ShadowFlame, 500);
+				//Main.NewText($"Bats slain: {QuillRain.BatsSlain}");
 			}
-			
+            else
+            {
+				damage += (int)Math.Round((double)target.lifeMax / 250);
+            }
+
 		}
 		public NPC FindClosestNPC(float maxDetectDistance)
 		{
@@ -140,7 +137,7 @@ namespace QoLPrime.Content.Projectiles
 				// 4. can take damage (e.g. moonlord core after all it's parts are downed)
 				// 5. hostile (!friendly)
 				// 6. not immortal (e.g. not a target dummy)
-				if (target.CanBeChasedBy() && target.aiStyle == NPCAIStyleID.Bat)
+				if (target.CanBeChasedBy())
 				{
 					// The DistanceSquared function returns a squared distance between 2 points, skipping relatively expensive square root calculations
 					float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, Projectile.Center);

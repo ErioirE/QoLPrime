@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using QoLPrime.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,15 @@ using Terraria.UI;
 
 namespace QoLPrime.Content.Players
 {
-    class PlayerModification : ModPlayer
-    {
-		static Projectile projectile;
-		static bool backpackEnabled = true;
-		static bool hasPrinted;
+	class PlayerModification : ModPlayer
+	{
+		public static bool backpackEnabled = true;
+		static bool hasPrinted = false;
 		float originalMoveSpeed = Main.LocalPlayer.moveSpeed;
 		float originalTileSpeed = Main.LocalPlayer.tileSpeed;
 		List<Item> backpackInventory = new List<Item>();
+		public static QuillRain mostRecentQuillRain;
+		static int updateCounter = 0;
 		
 		//On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
 		public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Player self)
@@ -96,10 +98,10 @@ namespace QoLPrime.Content.Players
 					{
 						int type = self.bank4.item[m].type;
 						int stack = self.bank4.item[m].stack;
-						Main.NewText($"Items to QS from backpack, attempting detour...{self.bank4.item[m].Name} * {self.bank4.item[m].stack}");
+						//Main.NewText($"Items to QS from backpack, attempting detour...{self.bank4.item[m].Name} * {self.bank4.item[m].stack}");
 
 						Item itemTransferred = Chest.PutItemInNearbyChest(self.bank4.item[m], self.Center);
-						Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
+						//Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
 						self.bank4.item[m] = itemTransferred;
 						if (self.bank4.item[m].type != type || self.bank4.item[m].stack != stack)
 							flag = true;
@@ -279,8 +281,17 @@ namespace QoLPrime.Content.Players
                 list4.Clear();
             }
         }
+
 		public override void PreUpdate()
         {
+            if (backpackEnabled && updateCounter == 30)
+            {
+				int temp = Player.chest;
+				Player.chest = -5;
+				ChestUI.QuickStack();
+				Player.chest = temp;
+            }
+			Player.IsVoidVaultEnabled = true;
 			backpackInventory = Player.bank4.item.ToList();
 
 			if (PlayerInput.Triggers.JustPressed.Inventory && Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
@@ -289,17 +300,16 @@ namespace QoLPrime.Content.Players
 			}
 			if (!hasPrinted)
 			{
-				/*Player.inventory[1] = new Item(ItemID.Marrow);
-				Player.inventory[1].prefix = PrefixID.Unreal;
+				//Player.inventory[4] = new Item(ModContent.ItemType<QuillRain>());
+				//Player.inventory[1].prefix = PrefixID.Unreal;
 				hasPrinted = true;
-				*/
+				
 			}
-			
 
-			//if (Player.moveSpeed <= originalMoveSpeed + 5)
-			//{
-			//	Player.moveSpeed = originalMoveSpeed * 7;
-			//}
+
+			Main.LocalPlayer.maxRunSpeed = 1000;
+				Main.LocalPlayer.moveSpeed = 500;
+
 			//Player.QuickStackAllChests();
 			/*if (backpackEnabled && Player.talkNPC < 0) {
 				if (backpackEnabled && projectile == null || projectile.type != ProjectileID.VoidLens)
@@ -381,13 +391,26 @@ namespace QoLPrime.Content.Players
 					//hasPrinted = true;
 				}
 			}*/
-            else
+
+			updateCounter++;
+            if (updateCounter >= 60)
             {
-				//Player.chest = -1;
+				updateCounter = 0;
             }
-
-
 		}
+		public static int? GetIndexOfItemInInventory(ModItem item, Player player)
+        {
+			int i = 0;
+            foreach (Item invItem in player.inventory)
+            {
+                if (invItem == item.Item)
+                {
+					return i;
+                }
+				i++;
+            }
+			return null;
+        }
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
 			//DebugHotkeys(triggersSet);
@@ -413,9 +436,19 @@ namespace QoLPrime.Content.Players
             if (QoLPrime.printSpawnRate.JustReleased)
             {
 				Main.NewText($"{QoLPrime.checkSpawnRate}");
-				Player.QuickStackAllChests();
 			}
-            base.ProcessTriggers(triggersSet);
+			if (QoLPrime.quickStackHotkey.JustPressed)
+			{
+				if (Main.LocalPlayer.chest != -1)
+				{
+					ChestUI.QuickStack();
+				}
+				else
+				{
+					Player.QuickStackAllChests();
+				}
+			}
+			base.ProcessTriggers(triggersSet);
         }
 		public static void DebugHotkeys(TriggersSet triggersSet)
         {

@@ -15,7 +15,7 @@ namespace QoLPrime.Items
 		public override void SetStaticDefaults() 
 		{
 			// DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
-			Tooltip.SetDefault($"Converts arrows into high-velocity revenant arrows that are able to phase through thin barriers and seek out enemies.{Environment.NewLine}This seeking has greater range with each successive hit by a single projectile, at the cost of 5% reduced damage.{Environment.NewLine} Maximum of 3 chains per shot. Applies a short ichor debuff.{Environment.NewLine}Use time: {Item.useTime}");
+			Tooltip.SetDefault($"Use time: {Item.useTime}{Environment.NewLine}Applies a short ichor debuff.{Environment.NewLine}Converts arrows into high-velocity revenant arrows that are able to phase through thin barriers and seek out enemies.{Environment.NewLine}Revenant arrows seeking range increases for each consecutive enemy hit, at the cost of 5% reduced damage.");
 			DisplayName.SetDefault("The Revenant's Revenge");
 
 		}
@@ -24,7 +24,6 @@ namespace QoLPrime.Items
 		public int ammoUsed;
 		public override void SetDefaults()
 		{
-			bool canShoot = true;
 			Item.useTime = 20;
 			Item.useAnimation = 20;
 			Item.useStyle = ItemUseStyleID.Shoot;
@@ -36,11 +35,12 @@ namespace QoLPrime.Items
 			Item.width = 26;
 			Item.height = 26;
 			Item.scale = 1f;
-			Item.shootSpeed = 50f;
+			Item.shootSpeed = 20f;
 			Item.crit = 20;
 			Item.shoot = AmmoID.Arrow;//ModContent.ProjectileType<Content.Projectiles.RevenantRevengeProjectile>();
 			Item.useAmmo = AmmoID.Arrow;
 			Item.value = 01600000;
+			Item.knockBack = 1f;
 
 			// This Ammo is nonspecific. I want to modify what it shoots, however.
 			//Item.useAmmo = ModContent.ItemType<ExampleCustomAmmo>();
@@ -75,9 +75,9 @@ namespace QoLPrime.Items
 			Recipe recipe = CreateRecipe();
 			recipe.AddIngredient(ItemID.Marrow, 1);
 			recipe.AddIngredient(ItemID.StakeLauncher, 1);
+			recipe.AddIngredient(ModContent.ItemType<NightsBlood>(), 1);
 			recipe.AddIngredient(ItemID.Ectoplasm, 20);
-			recipe.AddIngredient(ItemID.UnholyArrow, 10);
-			recipe.AddTile(TileID.TinkerersWorkbench);
+			recipe.AddTile(TileID.MythrilAnvil);
 			recipe.Register();
 		}
 	}
