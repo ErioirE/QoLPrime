@@ -21,6 +21,7 @@ namespace QoLPrime.Items
 	public class QuillRain : ModItem
 	{
 		public int BatsSlain = 0;
+		private int killsRequired = 1000;
 		public override void SetStaticDefaults() 
 		{
 			// DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
@@ -88,7 +89,7 @@ namespace QoLPrime.Items
 		{
 
 
-			tooltips[tooltips.Count - 1] = new TooltipLine(QoLPrime.Instance, "batKillCount", $"Use time: {Item.useTime}{Environment.NewLine}(Shots from this weapon gain 50% less damage and knockback from arrows.){Environment.NewLine}\"Hello! Would you like to destroy some \'bats\' today?\"{Environment.NewLine}\"Bats\" exterminated: {BatsSlain}");
+			tooltips[tooltips.Count - 1] = new TooltipLine(QoLPrime.Instance, "batKillCount", $"Use time: {Item.useTime}{Environment.NewLine}(Shots from this weapon gain 50% less damage and knockback from arrows.){Environment.NewLine}\"Hello! Would you like to destroy some \'bats\' today?\"{Environment.NewLine}\"Bats\" exterminated: {(((Double)BatsSlain/(Double)killsRequired)*100).ToString("0.##")}%");
 				
 			
 			return;

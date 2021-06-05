@@ -113,11 +113,12 @@ namespace QoLPrime.Content.Projectiles
 		{
             if (target.aiStyle == NPCAIStyleID.Bat)
             {
+				var maxLife = target.lifeMax;
 				target.AddBuff(BuffID.Ichor,250);
 				target.AddBuff(BuffID.Poisoned, 250);
                 if (target.life <=0)
                 {
-					PlayerModification.mostRecentQuillRain.BatsSlain += 1;	
+					PlayerModification.mostRecentQuillRain.BatsSlain += 1 + ((int)Math.Round((double)maxLife/100));	
                 }
 			}
 			
