@@ -65,7 +65,7 @@ namespace QoLPrime.Content.Players
 
 							if (num5 < 0 && (new Vector2(j * 16 + 8, k * 16 + 8) - self.Center).Length() < 250f)
 							{
-								Main.NewText($"Items to QS from backpack, attempting detour...");
+								//Main.NewText($"Items to QS from backpack, attempting detour...");
 								int num6 = self.chest;
 								self.chest = num5;
 								ChestUI.QuickStack();
@@ -307,8 +307,8 @@ namespace QoLPrime.Content.Players
 			}
 
 
-			Main.LocalPlayer.maxRunSpeed = 1000;
-				Main.LocalPlayer.moveSpeed = 500;
+			//Main.LocalPlayer.maxRunSpeed = 1000;
+				//Main.LocalPlayer.moveSpeed = 500;
 
 			//Player.QuickStackAllChests();
 			/*if (backpackEnabled && Player.talkNPC < 0) {
