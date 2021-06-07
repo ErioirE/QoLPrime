@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using QoLPrime.Content.Buffs;
 using QoLPrime.Items;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,11 @@ namespace QoLPrime.Content.Players
 		List<Item> backpackInventory = new List<Item>();
 		public static QuillRain mostRecentQuillRain;
 		static int updateCounter = 0;
-		
+		public static float fadeMultipler = 0f;
+		public override void Initialize()
+		{
+			
+		}
 		//On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
 		public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Player self)
         {
@@ -98,7 +103,9 @@ namespace QoLPrime.Content.Players
 					{
 						int type = self.bank4.item[m].type;
 						int stack = self.bank4.item[m].stack;
-						//Main.NewText($"Items to QS from backpack, attempting detour...{self.bank4.item[m].Name} * {self.bank4.item[m].stack}");
+						//Main.NewText($"Items to QS from backpack, attempting detour...{self.bank4.item[m].
+						//
+						//} * {self.bank4.item[m].stack}");
 
 						Item itemTransferred = Chest.PutItemInNearbyChest(self.bank4.item[m], self.Center);
 						//Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
@@ -284,7 +291,11 @@ namespace QoLPrime.Content.Players
 
 		public override void PreUpdate()
         {
-            if (backpackEnabled && updateCounter == 30)
+			if (!Player.HasBuff(ModContent.BuffType<RavenousBuff>()))
+			{
+				RavenousBuff.counter = 0;
+			}
+			if (backpackEnabled && updateCounter == 30)
             {
 				int temp = Player.chest;
 				Player.chest = -5;
@@ -393,7 +404,11 @@ namespace QoLPrime.Content.Players
 			}*/
 
 			updateCounter++;
-            if (updateCounter >= 60)
+			if (Player.HasBuff(ModContent.BuffType<RavenousBuff>())) {
+				fadeMultipler = 0.1f+(((Math.Abs(updateCounter - 30) * 30) / 90) / 10f);
+			}
+			//Main.NewText(fadeMultipler.ToString());
+			if (updateCounter >= 60)
             {
 				updateCounter = 0;
             }

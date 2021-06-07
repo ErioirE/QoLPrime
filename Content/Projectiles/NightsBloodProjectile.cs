@@ -16,6 +16,7 @@ namespace QoLPrime.Content.Projectiles
 		float speedMod = 1f;
 		bool boosted = false;
 		bool hasAccelerated = false;
+		int bonus = 0;
 		public override void SetStaticDefaults()
 		{
 			DisplayName.SetDefault("Night's Blood Projectile"); // Name of the projectile. It can be appear in chat
@@ -110,12 +111,17 @@ namespace QoLPrime.Content.Projectiles
 			target.AddBuff(BuffID.Ichor, 250);
 			if (target.life <= target.lifeMax / 2)
 			{
-				target.AddBuff(BuffID.ShadowFlame, 500);
+				//target.AddBuff(BuffID.ShadowFlame, 500);
 				//Main.NewText($"Bats slain: {QuillRain.BatsSlain}");
 			}
-            else
+            if (target.life <= 0)
             {
-				damage += (int)Math.Round((double)target.lifeMax / 250);
+				int temp = Main.LocalPlayer.statManaMax;
+				Main.LocalPlayer.statMana += target.lifeMax;
+                if (Main.LocalPlayer.statMana > temp)
+                {
+					//Main.LocalPlayer.statMana = temp;
+                }
             }
 
 		}
@@ -145,8 +151,19 @@ namespace QoLPrime.Content.Projectiles
 					// Check if it is within the radius
 					if ( sqrDistanceToTarget < sqrMaxDetectDistance)
 					{
+						bonus = (int)(target.lifeMax / 50);
+                        if (bonus > 10)
+                        {
+							bonus = 10;
+                        }
 						sqrMaxDetectDistance = sqrDistanceToTarget;
 						closestNPC = target;
+						if (!boosted)
+						{
+							//Main.NewText($"Adding {bonus} damage.");
+							Projectile.damage += bonus;
+							boosted = true;
+						}
 					}
 				}
 			}

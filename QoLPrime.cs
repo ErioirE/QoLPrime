@@ -16,6 +16,8 @@ using Microsoft.Xna.Framework;
 using Terraria.GameInput;
 using Terraria.Localization;
 using Microsoft.Xna.Framework.Graphics;
+using QoLPrime.Content.Buffs;
+using QoLPrime.Items;
 
 namespace QoLPrime
 {
@@ -60,18 +62,40 @@ namespace QoLPrime
 			chestRangeHook.Apply();
 			Hook drawInvHook = new Hook(typeof(Main).GetMethod("DrawInventory", BindingFlags.NonPublic | BindingFlags.Instance), typeof(QoLPrime).GetMethod("drawInventoryHijack"));
 			drawInvHook.Apply();
+			Hook drawNpcHook = new Hook(typeof(Main).GetMethod("DrawNPCs", BindingFlags.NonPublic | BindingFlags.Instance), typeof(QoLPrime).GetMethod("drawNpcsHijack"));
+			drawNpcHook.Apply();
 
 			On.Terraria.Player.HandleBeingInChestRange += PlayerModification.chestRangeHijack;
 			On.Terraria.UI.ChestUI.QuickStack += PlayerModification.QuickStackHijack;
 			On.Terraria.Player.QuickStackAllChests += PlayerModification.quickStackAllHijack;
 			On.Terraria.Main.DrawInventory += QoLPrime.drawInventoryHijack;
+			On.Terraria.Main.DrawNPCs += QoLPrime.drawNpcsHijack;
 		}
 
 		public override void Unload()
 		{
 			QoLPrime.Instance = null;
 		}
-
+		public static void drawNpcsHijack(On.Terraria.Main.orig_DrawNPCs orig, Main self, bool behindTiles)
+        {
+			orig(self, behindTiles);
+			int xOffset = 10;
+			int yOffset = -15;
+			Color iconColorIfMana = new Color(255,255,255) * PlayerModification.fadeMultipler;
+			Color iconColorIfLife = new Color(255,255,255) * PlayerModification.fadeMultipler; ;
+			Main.spriteBatch.End();
+			Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullNone, null, Main.Transform);
+			if (Main.LocalPlayer.HasBuff(ModContent.BuffType<RavenousBuff>())&& !NightsBlood.willHurt)
+			{
+				Texture2D textureToUse = RavenousBuff.textureToUseForLife.Value;
+				Main.spriteBatch.Draw(RavenousBuff.textureToUseForMana.Value, new Vector2(Main.screenWidth/2-Player.defaultWidth+xOffset, Main.screenHeight/2 - Player.defaultHeight + yOffset), new Microsoft.Xna.Framework.Rectangle(0, 0, RavenousBuff.textureToUseForMana.Width(), RavenousBuff.textureToUseForMana.Height()), iconColorIfMana,0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+			}
+			else if (Main.LocalPlayer.HasBuff(ModContent.BuffType<RavenousBuff>()) && NightsBlood.willHurt)
+            {
+				
+				Main.spriteBatch.Draw(RavenousBuff.textureToUseForLife.Value, new Vector2(Main.screenWidth / 2 - Player.defaultWidth+xOffset, Main.screenHeight / 2 - Player.defaultHeight+yOffset), new Microsoft.Xna.Framework.Rectangle(0, 0, RavenousBuff.textureToUseForLife.Width(), RavenousBuff.textureToUseForLife.Height()), iconColorIfLife, 0f, default(Vector2), 1f, SpriteEffects.None, 0f);
+			}
+		}
 		public static void drawInventoryHijack(On.Terraria.Main.orig_DrawInventory orig, Main self)
 		{
 				orig(self);
@@ -111,6 +135,7 @@ namespace QoLPrime
 				if (!Main.mouseText && num108 == 1)
 					self.MouseText(Language.GetTextValue("GameUI.QuickStackToNearby"), 0, 0);
 			}
+
 		}
 	}
 	internal enum ExampleModMessageType : byte

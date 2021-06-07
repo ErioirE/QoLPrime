@@ -16,6 +16,10 @@ namespace QoLPrime.Content.Projectiles
 		float speedMod = 1.2f;
 		int lastNumHits = 0;
 		float brightness = 0.3f;
+
+		bool boosted = false;
+
+		int bonus = 0;
 		Vector2 originalVelocity;
 		static float defaultDetectRadius = 65f;
 		float maxDetectRadius = defaultDetectRadius; // The maximum radius at which a projectile can detect a target
@@ -50,8 +54,13 @@ namespace QoLPrime.Content.Projectiles
         // Custom AI
         public override void AI() {
 			AddLightToScale(Projectile.position,Color.BlueViolet.ToVector3(),brightness);
-			
-			brightness = (float)Math.Round((float)this.Projectile.timeLeft / 100f);
+			int percentTimeLeft = (int)(1 * ((130 * this.Projectile.timeLeft) / 100));
+			brightness = (float)percentTimeLeft;
+			if (Projectile.timeLeft > 0) {
+				int opacityTimeLeft = (int)(255 * (percentTimeLeft)/255);
+				//Main.NewText($"Time left as %255 {opacityTimeLeft}");
+				Projectile.alpha = 255 - percentTimeLeft;
+			}
 			if (!hasAccelerated)
 			{
 				originalVelocity = Projectile.velocity;
@@ -62,6 +71,15 @@ namespace QoLPrime.Content.Projectiles
 			float projSpeed = 5f;// Trying to find NPC closest to the projectile
 			NPC closestNPC = FindClosestNPC(maxDetectRadius,lastHit);
 
+			if (bonus > 50)
+			{
+				bonus = 50;
+			}
+			if (!boosted && bonus >0) {
+				//Main.NewText($"Bonus: {bonus}");
+				Projectile.damage += bonus;
+				boosted = true;
+			}
 			Random rand = new Random();
 			//Main.NewText($"Last Hit: {lastHit}");
 			if (Projectile.numHits > lastNumHits)
@@ -176,7 +194,8 @@ namespace QoLPrime.Content.Projectiles
 		}
 		public void AddLightToScale(Vector2 position, Vector3 rgb,float multiplier)
         {
-			Lighting.AddLight(Projectile.position, new Vector3(rgb.X*multiplier, rgb.Y*multiplier, rgb.Z*multiplier));
+			float trueMult = multiplier / 100;
+			Lighting.AddLight(Projectile.position, new Vector3(rgb.X* trueMult, rgb.Y* trueMult, rgb.Z* trueMult));
 		}
 		// Finding the closest NPC to attack within maxDetectDistance range
 		// If not found then returns null
@@ -203,6 +222,7 @@ namespace QoLPrime.Content.Projectiles
 					// Check if it is within the radius
 					if (target.life != lastHit && sqrDistanceToTarget < sqrMaxDetectDistance) {
 						sqrMaxDetectDistance = sqrDistanceToTarget;
+						bonus = (int)((target.lifeMax / 500)*5);
 						closestNPC = target;
 					}
 				}

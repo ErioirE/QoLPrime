@@ -15,13 +15,15 @@ using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 using Terraria.Audio;
 using Microsoft.Xna.Framework.Audio;
 using QoLPrime.Content.Players;
+using Terraria.ModLoader.IO;
+using System.IO;
 
 namespace QoLPrime.Items
 {
 	public class QuillRain : ModItem
 	{
 		public int BatsSlain = 0;
-		private int killsRequired = 500;
+		private int killsRequired = 100;
 		public override void SetStaticDefaults() 
 		{
 			// DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
@@ -88,8 +90,19 @@ namespace QoLPrime.Items
 		public override void ModifyTooltips(List<TooltipLine> tooltips)
 		{
 
+			int indexForTooltip = 0;
+            foreach (TooltipLine line in tooltips)
+            {
+                if (line.isModifier)
+                {
 
-			tooltips[tooltips.Count - 1] = new TooltipLine(QoLPrime.Instance, "batKillCount", $"Use time: {Item.useTime}{Environment.NewLine}(Shots from this weapon gain 50% less damage and knockback from arrows.){Environment.NewLine}\"Hello! Would you like to destroy some \'bats\' today?\"{Environment.NewLine}\"Bats\" exterminated: {(((Double)BatsSlain/(Double)killsRequired)*100).ToString("0.##")}%");
+                }
+                else
+                {
+					indexForTooltip++;
+                }
+            }
+			tooltips.Insert(indexForTooltip,new TooltipLine(QoLPrime.Instance, "batKillCount", $"Use time: {Item.useTime}{Environment.NewLine}(Shots from this weapon gain 50% less damage and knockback from arrows.){Environment.NewLine}\"Hello! Would you like to destroy some \'bats\' today?\"{Environment.NewLine}\"Bats\" exterminated: {(((Double)BatsSlain/(Double)killsRequired)*100).ToString("0.##")}%"));
 				
 			
 			return;
@@ -97,13 +110,14 @@ namespace QoLPrime.Items
 		}
 		public override void UpdateInventory(Player player)
 		{
-            if (this.BatsSlain >= 1000 && Main.hardMode)
+            if (this.BatsSlain >= killsRequired && Main.hardMode)
             {
                 if (PlayerModification.GetIndexOfItemInInventory(this, player) is int temp)
                 {
 					var prefix = this.Item.prefix;
 					player.inventory[temp] = new Item(ModContent.ItemType<NightsBlood>());
 					player.inventory[temp].prefix = prefix;
+					player.inventory[temp].Refresh();
 				}
 				
             }
@@ -119,9 +133,39 @@ namespace QoLPrime.Items
 			recipe.AddIngredient(ItemID.Stinger, 5);
 			recipe.Register();
 		}
+		
+		public override ModItem Clone(Item item)
+		{
+			var clone = (QuillRain)base.Clone(item);
+			clone.BatsSlain = BatsSlain;
+			return clone;
+		}
+		public override void Load(TagCompound tag)
+		{
+			BatsSlain = tag.GetInt("BatsSlain");
+		}
+
+		public override TagCompound Save()
+		{
+			return new TagCompound
+		{
+			{ "BatsSlain", BatsSlain}
+		};
+		}
+
+		public override void NetSend(BinaryWriter writer)
+		{
+			writer.Write(BatsSlain);
+		}
+
+		public override void NetReceive(BinaryReader reader)
+		{
+			BatsSlain = reader.ReadInt32();
+		}
+
 
 	}
 
-	
+
 
 }
