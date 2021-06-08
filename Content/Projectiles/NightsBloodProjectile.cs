@@ -108,21 +108,8 @@ namespace QoLPrime.Content.Projectiles
 		}
 		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
 		{
-			target.AddBuff(BuffID.Ichor, 250);
-			if (target.life <= target.lifeMax / 2)
-			{
-				//target.AddBuff(BuffID.ShadowFlame, 500);
-				//Main.NewText($"Bats slain: {QuillRain.BatsSlain}");
-			}
-            if (target.life <= 0)
-            {
-				int temp = Main.LocalPlayer.statManaMax;
-				Main.LocalPlayer.statMana += target.lifeMax;
-                if (Main.LocalPlayer.statMana > temp)
-                {
-					//Main.LocalPlayer.statMana = temp;
-                }
-            }
+			target.AddBuff(BuffID.Ichor, 60);
+
 
 		}
 		public NPC FindClosestNPC(float maxDetectDistance)
@@ -161,7 +148,7 @@ namespace QoLPrime.Content.Projectiles
 						if (!boosted)
 						{
 							//Main.NewText($"Adding {bonus} damage.");
-							Projectile.damage += bonus;
+							//Projectile.damage += bonus;
 							boosted = true;
 						}
 					}

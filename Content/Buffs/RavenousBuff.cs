@@ -15,11 +15,12 @@ namespace QoLPrime.Content.Buffs
 	public class RavenousBuff : ModBuff
 	{
 		public static int counter = 0;
+		public static string texturePath = "QoLPrime/Assets/Textures/Buffs/RavenousBuff";
 		public static string texturePathMana = "QoLPrime/Assets/Textures/Buffs/RavenousBuffMana";
 		public static string texturePathLife = "QoLPrime/Assets/Textures/Buffs/RavenousBuffLife";
 		public static Asset<Texture2D> textureToUseForMana = (Asset<Texture2D>)ModContent.GetTexture(RavenousBuff.texturePathMana);
 		public static Asset<Texture2D> textureToUseForLife = (Asset<Texture2D>)ModContent.GetTexture(RavenousBuff.texturePathLife);
-		public override string Texture => texturePathMana;
+		public override string Texture => texturePath;
 		public override void SetDefaults()
 		{
 			DisplayName.SetDefault("Night's Blood is ravenous...");

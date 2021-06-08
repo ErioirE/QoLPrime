@@ -114,7 +114,7 @@ namespace QoLPrime.Content.Projectiles
             if (target.aiStyle == NPCAIStyleID.Bat)
             {
 				var maxLife = target.lifeMax;
-				target.AddBuff(BuffID.Ichor,250);
+				target.AddBuff(BuffID.Ichor,60);
 				target.AddBuff(BuffID.Poisoned, 250);
                 if (target.life <=0)
                 {

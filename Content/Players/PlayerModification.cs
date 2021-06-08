@@ -45,7 +45,6 @@ namespace QoLPrime.Content.Players
 			orig(self);
 			if (backpackEnabled)
 			{
-				
 				int num2 = 17;
 				int num3 = (int)(self.Center.X / 16f);
 				int num4 = (int)(self.Center.Y / 16f);
@@ -291,6 +290,7 @@ namespace QoLPrime.Content.Players
 
 		public override void PreUpdate()
         {
+
 			if (!Player.HasBuff(ModContent.BuffType<RavenousBuff>()))
 			{
 				RavenousBuff.counter = 0;
@@ -298,16 +298,20 @@ namespace QoLPrime.Content.Players
 			if (backpackEnabled && updateCounter == 30)
             {
 				int temp = Player.chest;
-				Player.chest = -5;
+				//Player.chest = -5;
 				ChestUI.QuickStack();
 				Player.chest = temp;
+				if (QoLPrime.invBottom == 0) {
+					//QoLPrime.invBottom = Main.instance.invBottom;
+				}
+				
             }
 			Player.IsVoidVaultEnabled = true;
 			backpackInventory = Player.bank4.item.ToList();
 
 			if (PlayerInput.Triggers.JustPressed.Inventory && Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
 			{
-				Player.chest = -5;
+				//Player.chest = -5;
 			}
 			if (!hasPrinted)
 			{
@@ -431,7 +435,7 @@ namespace QoLPrime.Content.Players
 			//DebugHotkeys(triggersSet);
 
 			
-			bool backpackTogglePressed = QoLPrime.backpackToggle.JustReleased;
+			bool backpackTogglePressed = QoLPrime.backpackToggle.JustPressed;
             if (backpackTogglePressed)
             {
 				backpackEnabled = !backpackEnabled;
@@ -439,8 +443,8 @@ namespace QoLPrime.Content.Players
 
 				if (backpackEnabled)
                 {
-					Player.chest = -5;
-					Main.NewText($"{string.Join(',', backpackInventory[0].Name)}");
+					//Player.chest = -5;
+					//Main.NewText($"{string.Join(',', backpackInventory[0].Name)}");
 					
 				}
                 else
