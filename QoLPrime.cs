@@ -30,11 +30,14 @@ namespace QoLPrime
         public static QoLPrime Instance { get; private set; }
         public static Hook pickupItemHook;
         public static Dictionary<string, Item[]> backpackPublic;
+        public static string[] customDeathMessages;
 
 
 
         public QoLPrime()
         {
+            string deathMessagesConfig = File.ReadAllText(ModLoader.ModPath+"/deathMessages.txt");
+            customDeathMessages = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(deathMessagesConfig);
             QoLPrime.Instance = this;
             if (backpackPublic == null)
             {
@@ -127,6 +130,7 @@ namespace QoLPrime
             On.Terraria.UI.ChestUI.Draw += Detours.ChestUIDrawHijack;
             On.Terraria.UI.ChestUI.DepositAll += Detours.DepositAllHijack;
             On.Terraria.UI.ChestUI.LootAll += Detours.LootAllHijack;
+            On.Terraria.DataStructures.PlayerDeathReason.GetDeathText += Detours.DeathReasonHijack;
 
         }
 
