@@ -3,13 +3,12 @@ using QoLPrime.Content.Buffs;
 using QoLPrime.Items;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.GameInput;
-using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using System.Linq;
@@ -55,40 +54,41 @@ namespace QoLPrime.Content.Players
 		//On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
 		/*public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Player self)
         {
-			if (self.chest != -5) {
+            if (self.chest != -5)
+            {
 
 
-				orig(self);
+                orig(self);
 
 			}
         }*/
 		public static void quickStackAllHijack(On.Terraria.Player.orig_QuickStackAllChests orig, Player self)
 		{
 
-			orig(self);
-			if (backpackEnabled)
-			{
-				int num2 = 17;
-				int num3 = (int)(self.Center.X / 16f);
-				int num4 = (int)(self.Center.Y / 16f);
-				for (int j = num3 - num2; j <= num3 + num2; j++)
-				{
-					if (j < 0 || j >= Main.maxTilesX)
-						continue;
+            orig(self);
+            if (backpackEnabled)
+            {
+                int num2 = 17;
+                int num3 = (int)(self.Center.X / 16f);
+                int num4 = (int)(self.Center.Y / 16f);
+                for (int j = num3 - num2; j <= num3 + num2; j++)
+                {
+                    if (j < 0 || j >= Main.maxTilesX)
+                        continue;
 
-					for (int k = num4 - num2; k <= num4 + num2; k++)
-					{
-						if (k >= 0 && k < Main.maxTilesY)
-						{
-							int num5 = 0;
-							if (Main.tile[j, k].type == 29)
-								num5 = -2;
-							else if (Main.tile[j, k].type == 97)
-								num5 = -3;
-							else if (Main.tile[j, k].type == 463)
-								num5 = -4;
-							else if (Main.tile[j, k].type == 491)
-								num5 = -5;
+                    for (int k = num4 - num2; k <= num4 + num2; k++)
+                    {
+                        if (k >= 0 && k < Main.maxTilesY)
+                        {
+                            int num5 = 0;
+                            if (Main.tile[j, k].type == 29)
+                                num5 = -2;
+                            else if (Main.tile[j, k].type == 97)
+                                num5 = -3;
+                            else if (Main.tile[j, k].type == 463)
+                                num5 = -4;
+                            else if (Main.tile[j, k].type == 491)
+                                num5 = -5;
 
 							if (num5 < 0 && (new Vector2(j * 16 + 8, k * 16 + 8) - self.Center).Length() < 250f)
 							{
@@ -114,8 +114,8 @@ namespace QoLPrime.Content.Players
 						}
 					}
 
-					return;
-				}
+                    return;
+                }
 
 				bool flag = false;
 				for (int m = 0; m < 40; m++)
@@ -143,11 +143,11 @@ namespace QoLPrime.Content.Players
 		public static void QuickStackHijack(On.Terraria.UI.ChestUI.orig_QuickStack orig)
         {
 
-			Player player = Main.player[Main.myPlayer];
-			int startingChest = player.chest;
-			orig();
-			player.chest = startingChest;
-			if (backpackEnabled)
+            Player player = Main.player[Main.myPlayer];
+            int startingChest = player.chest;
+            orig();
+            player.chest = startingChest;
+            if (backpackEnabled)
             {
                 Item[] inventory = PlayerModification.backpack.item;
                 Item[] item = player.bank.item;
@@ -392,16 +392,16 @@ namespace QoLPrime.Content.Players
         }
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-			//DebugHotkeys(triggersSet);
+            //DebugHotkeys(triggersSet);
 
 			
 			bool backpackTogglePressed = QoLPrime.backpackToggle.JustPressed;
             if (backpackTogglePressed)
             {
-				backpackEnabled = !backpackEnabled;
-				Main.NewText($"Backpack toggled to {backpackEnabled}");
+                backpackEnabled = !backpackEnabled;
+                Main.NewText($"Backpack toggled to {backpackEnabled}");
 
-				if (backpackEnabled)
+                if (backpackEnabled)
                 {
 					//Player.chest = -5;
 					//Main.NewText($"{string.Join(',', backpackInventory[0].Name)}");
@@ -436,18 +436,18 @@ namespace QoLPrime.Content.Players
 			{ ChestUI.LootAll(); }
 				base.ProcessTriggers(triggersSet);
         }
-		public static void DebugHotkeys(TriggersSet triggersSet)
+        public static void DebugHotkeys(TriggersSet triggersSet)
         {
-			List<string> keysPressed = new List<string>();
-			foreach (string key in triggersSet.KeyStatus.Keys)
-			{
-				if (triggersSet.KeyStatus[key])
-				{
-					keysPressed.Add(key);
-				}
-			}
-			Main.NewText($"{string.Join(',', keysPressed)}");
-		}
+            List<string> keysPressed = new List<string>();
+            foreach (string key in triggersSet.KeyStatus.Keys)
+            {
+                if (triggersSet.KeyStatus[key])
+                {
+                    keysPressed.Add(key);
+                }
+            }
+            Main.NewText($"{string.Join(',', keysPressed)}");
+        }
 
     }
 }

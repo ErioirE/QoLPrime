@@ -1,8 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
 
 namespace QoLPrime.Content.Projectiles
 {
@@ -104,95 +104,98 @@ namespace QoLPrime.Content.Projectiles
 			{
 
 
-				if (Projectile.numHits > 0) {
-					maxDetectRadius = (defaultDetectRadius +(Projectile.numHits*150));
+                if (Projectile.numHits > 0)
+                {
+                    maxDetectRadius = (defaultDetectRadius + (Projectile.numHits * 150));
                     if (maxDetectRadius > 500)
                     {
-						maxDetectRadius = 500;
+                        maxDetectRadius = 500;
                     }
-				}
-				Tile tileAtLocation = null;
-				try
-				{
-					var pos = Projectile.position;
-					//Main.NewText($"Pos: {pos.X/16f} * {pos.Y/16f}");
-					tileAtLocation = Main.tile[(int)Math.Round(pos.X/16f), ((int)Math.Round(pos.Y/16f))];
-				}
+                }
+                Tile tileAtLocation = null;
+                try
+                {
+                    var pos = Projectile.position;
+                    //Main.NewText($"Pos: {pos.X/16f} * {pos.Y/16f}");
+                    tileAtLocation = Main.tile[(int)Math.Round(pos.X / 16f), ((int)Math.Round(pos.Y / 16f))];
+                }
                 catch (IndexOutOfRangeException ex)
                 {
 
                 }
                 if (tileAtLocation.CollisionType > 0)
                 {
-					
-					collisionCount++;
-                    if (Projectile.extraUpdates == 5 && Projectile.extraUpdates - collisionCount*2 > -1)
+
+                    collisionCount++;
+                    if (Projectile.extraUpdates == 5 && Projectile.extraUpdates - collisionCount * 2 > -1)
                     {
-						Projectile.extraUpdates -= collisionCount * 2;
-						if (speedMod > 0.3f)
-						{
-							speedMod = reduceSpeed(speedMod, 0.2f);
-						}
-						momentum *= 0.2;
-					}
-					else if (Projectile.extraUpdates - collisionCount > -1) {
-						Projectile.extraUpdates -= collisionCount;
-						if (speedMod > 0.03f)
-						{
-							speedMod= reduceSpeed(speedMod,0.4f);
-						}
-						momentum *= 0.6;
-					}
+                        Projectile.extraUpdates -= collisionCount * 2;
+                        if (speedMod > 0.3f)
+                        {
+                            speedMod = reduceSpeed(speedMod, 0.2f);
+                        }
+                        momentum *= 0.2;
+                    }
+                    else if (Projectile.extraUpdates - collisionCount > -1)
+                    {
+                        Projectile.extraUpdates -= collisionCount;
+                        if (speedMod > 0.03f)
+                        {
+                            speedMod = reduceSpeed(speedMod, 0.4f);
+                        }
+                        momentum *= 0.6;
+                    }
                     else
                     {
-						if (speedMod > 0.03f) {
-							speedMod = reduceSpeed(speedMod,0.92f);
-						}
+                        if (speedMod > 0.03f)
+                        {
+                            speedMod = reduceSpeed(speedMod, 0.92f);
+                        }
                         else
                         {
-							Projectile.timeLeft -= 3;
+                            Projectile.timeLeft -= 3;
                         }
                     }
 
                 }
                 if (momentum < 10)
                 {
-					//Projectile.tileCollide = true;
-				}
-				
-				return;
-			}
+                    //Projectile.tileCollide = true;
+                }
+
+                return;
+            }
             else
             {
-				Projectile.tileCollide = false;
-			}
-			// If found, change the velocity of the projectile and turn it in the direction of the target
-			// Use the SafeNormalize extension method to avoid NaNs returned by Vector2.Normalize when the vector is zero 
-			Vector2 target = (closestNPC.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
-			Projectile.velocity = target * projSpeed;
-			float scaleFactor = Projectile.velocity.Length();
-			float targetAngle = Projectile.Center.AngleTo(target);
-			Vector2 thing1 = (Projectile.velocity.ToRotation().AngleTowards(targetAngle, (float)Math.PI / 180f).ToRotationVector2() * scaleFactor);
+                Projectile.tileCollide = false;
+            }
+            // If found, change the velocity of the projectile and turn it in the direction of the target
+            // Use the SafeNormalize extension method to avoid NaNs returned by Vector2.Normalize when the vector is zero 
+            Vector2 target = (closestNPC.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
+            Projectile.velocity = target * projSpeed;
+            float scaleFactor = Projectile.velocity.Length();
+            float targetAngle = Projectile.Center.AngleTo(target);
+            Vector2 thing1 = (Projectile.velocity.ToRotation().AngleTowards(targetAngle, (float)Math.PI / 180f).ToRotationVector2() * scaleFactor);
 
-			Projectile.rotation = thing1.ToRotation() + 1.5708f;
-			
-		}
-		public float reduceSpeed(float current,float multiplier, float minimum = 0.03f)
+            Projectile.rotation = thing1.ToRotation() + 1.5708f;
+
+        }
+        public float reduceSpeed(float current, float multiplier, float minimum = 0.03f)
         {
-			float temp = (current *= multiplier);
+            float temp = (current *= multiplier);
             if (temp >= minimum)
             {
-				return temp;
+                return temp;
             }
-			return minimum;
+            return minimum;
         }
-		public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
-		{
-			this.Projectile.timeLeft += damage/2;
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            this.Projectile.timeLeft += damage / 2;
 
-				target.AddBuff(BuffID.Ichor, 150);	
-		}
-		public void AddLightToScale(Vector2 position, Vector3 rgb,float multiplier)
+            target.AddBuff(BuffID.Ichor, 150);
+        }
+        public void AddLightToScale(Vector2 position, Vector3 rgb, float multiplier)
         {
 			float trueMult = multiplier / 100;
 			Lighting.AddLight(Projectile.position, new Vector3(rgb.X* trueMult, rgb.Y* trueMult, rgb.Z* trueMult));
@@ -228,7 +231,7 @@ namespace QoLPrime.Content.Projectiles
 				}
 			}
 
-			return closestNPC;
-		}
-	}
+            return closestNPC;
+        }
+    }
 }
