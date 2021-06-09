@@ -12,25 +12,48 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using System.Linq;
+using Terraria.ModLoader.IO;
 
 namespace QoLPrime.Content.Players
 {
 	class PlayerModification : ModPlayer
 	{
+		//public static TagCompound savedData;
+		static bool firstRun = true;
 		public static bool backpackEnabled = true;
 		static bool hasPrinted = false;
-		float originalMoveSpeed = Main.LocalPlayer.moveSpeed;
-		float originalTileSpeed = Main.LocalPlayer.tileSpeed;
-		List<Item> backpackInventory = new List<Item>();
+		
 		public static QuillRain mostRecentQuillRain;
-		static int updateCounter = 0;
+		public static int updateCounter = 0;
 		public static float fadeMultipler = 0f;
+		public static PlayerModification instance;
+		public static string name;
+		public static Chest backpack;
+        public PlayerModification()
+        {
+			instance = this;
+			
+			//backpack = new Chest();
+			//backpack.item = QoLPrime.newEmptyChest();
+		}
 		public override void Initialize()
 		{
+
+
+
+
+		}
+		public override void Load()
+        {
+
 			
 		}
+
+
+
 		//On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
-		public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Player self)
+		/*public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Player self)
         {
 			if (self.chest != -5) {
 
@@ -38,7 +61,7 @@ namespace QoLPrime.Content.Players
 				orig(self);
 
 			}
-        }
+        }*/
 		public static void quickStackAllHijack(On.Terraria.Player.orig_QuickStackAllChests orig, Player self)
 		{
 
@@ -83,9 +106,9 @@ namespace QoLPrime.Content.Players
 				{
 					for (int l = 0; l < 40; l++)
 					{
-						if (self.bank4.item[l].type > 0 && self.bank4.item[l].stack > 0 && !self.bank4.item[l].IsACoin)
+						if (PlayerModification.backpack.item[l].type > 0 && PlayerModification.backpack.item[l].stack > 0 && !PlayerModification.backpack.item[l].IsACoin)
 						{
-							NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)self.bank4.item[l].prefix);
+							NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)PlayerModification.backpack.item[l].prefix);
 							NetMessage.SendData(85, -1, -1, null, l);
 							self.inventoryChestStack[l] = true;
 						}
@@ -98,18 +121,18 @@ namespace QoLPrime.Content.Players
 				for (int m = 0; m < 40; m++)
 				{
 					
-					if (self.bank4.item[m].type > 0 && self.bank4.item[m].stack > 0 && !self.bank4.item[m].IsACoin)
+					if (PlayerModification.backpack.item[m].type > 0 && PlayerModification.backpack.item[m].stack > 0 && !PlayerModification.backpack.item[m].IsACoin)
 					{
-						int type = self.bank4.item[m].type;
-						int stack = self.bank4.item[m].stack;
-						//Main.NewText($"Items to QS from backpack, attempting detour...{self.bank4.item[m].
+						int type = PlayerModification.backpack.item[m].type;
+						int stack = PlayerModification.backpack.item[m].stack;
+						//Main.NewText($"Items to QS from backpack, attempting detour...{PlayerModification.backpack.item[m].
 						//
-						//} * {self.bank4.item[m].stack}");
+						//} * {PlayerModification.backpack.item[m].stack}");
 
-						Item itemTransferred = Chest.PutItemInNearbyChest(self.bank4.item[m], self.Center);
+						Item itemTransferred = Chest.PutItemInNearbyChest(PlayerModification.backpack.item[m], self.Center);
 						//Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
-						self.bank4.item[m] = itemTransferred;
-						if (self.bank4.item[m].type != type || self.bank4.item[m].stack != stack)
+						PlayerModification.backpack.item[m] = itemTransferred;
+						if (PlayerModification.backpack.item[m].type != type || PlayerModification.backpack.item[m].stack != stack)
 							flag = true;
 					}
 				}
@@ -126,7 +149,7 @@ namespace QoLPrime.Content.Players
 			player.chest = startingChest;
 			if (backpackEnabled)
             {
-                Item[] inventory = player.bank4.item;
+                Item[] inventory = PlayerModification.backpack.item;
                 Item[] item = player.bank.item;
                 if (player.chest > -1)
                 {
@@ -290,7 +313,26 @@ namespace QoLPrime.Content.Players
 
 		public override void PreUpdate()
         {
+            if (firstRun)
+            {
+				if (!QoLPrime.backpackPublic.ContainsKey(this.Player.name))
+				{
+					backpack = new Chest();
+					for (int i = 0; i < backpack.item.Length; i++)
+					{
+						backpack.item[i] = new Item();
+					}
 
+				}
+				else
+				{				
+					backpack.item = QoLPrime.backpackPublic.GetValueOrDefault(this.Player.name);
+				}
+				firstRun = false;
+			}
+			
+			QoLPrime.backpackPublic[this.Player.name] = backpack.item;
+			//Mod.Logger.Info($"{string.Join(',',QoLPrime.backpackPublic.Keys)}");
 			if (!Player.HasBuff(ModContent.BuffType<RavenousBuff>()))
 			{
 				RavenousBuff.counter = 0;
@@ -299,15 +341,15 @@ namespace QoLPrime.Content.Players
             {
 				int temp = Player.chest;
 				//Player.chest = -5;
-				ChestUI.QuickStack();
+				//ChestUI.QuickStack();
 				Player.chest = temp;
 				if (QoLPrime.invBottom == 0) {
 					//QoLPrime.invBottom = Main.instance.invBottom;
 				}
 				
             }
-			Player.IsVoidVaultEnabled = true;
-			backpackInventory = Player.bank4.item.ToList();
+			//Player.IsVoidVaultEnabled = true;
+			
 
 			if (PlayerInput.Triggers.JustPressed.Inventory && Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
 			{
@@ -322,90 +364,7 @@ namespace QoLPrime.Content.Players
 			}
 
 
-			//Main.LocalPlayer.maxRunSpeed = 1000;
-				//Main.LocalPlayer.moveSpeed = 500;
-
-			//Player.QuickStackAllChests();
-			/*if (backpackEnabled && Player.talkNPC < 0) {
-				if (backpackEnabled && projectile == null || projectile.type != ProjectileID.VoidLens)
-				{
-
-					projectile = Projectile.NewProjectileDirect(Player.GetProjectileSource_Misc(Player.whoAmI), Player.position, Vector2.Zero, ProjectileID.VoidLens, 0, 0);
-
-					projectile.ignoreWater = true;
-				}
-				else
-				{
-					if (Player.position.Y > 2200)
-					{
-						projectile.position.Y = Player.position.Y - 1500;
-					}
-					else
-					{
-						//Main.NewText("POS#2");
-						projectile.position.Y = Player.position.Y;
-					}
-
-					projectile.timeLeft = int.MaxValue;
-					projectile.position.X = Player.position.X;
-					//projectile.position.Y = Player.position.Y-1000;
-					projectile.height = 1510;
-					projectile.width = 1;
-					projectile.alpha = 255;
-					projectile.light = -1;
-					projectile.Opacity = 0;
-					projectile.ignoreWater = true;
-					//projectile.Center = new Vector2(Player.position.X,Player.position.Y-1500);
-				}
-				if (projectile.active == false && backpackEnabled)
-				{
-					projectile.active = true;
-				}
-
-				float distancex = Math.Abs(Main.MouseWorld.X - Player.Center.X);
-				float distancey = Math.Abs(Main.MouseWorld.Y - Player.Center.Y);
-				Rectangle mouseBox = new Rectangle((int)Main.MouseWorld.X - 10, (int)Main.MouseWorld.Y - 10, 20, 20);
-				if (projectile.Hitbox.Intersects(mouseBox))
-				{
-					projectile.position.X += 50;
-
-				}
-				else
-				{
-					projectile.position.X = Player.position.X;
-				}
-				if (Player.chest == -1)
-				{
-					Player.chest = -5;
-				}
-
-
-
-				if (Player.chest == -5)
-				{
-					//Player.chest = -5;
-
-					Player.voidLensChest = projectile.identity;
-
-					Main.projectile[Player.voidLensChest] = projectile;
-
-					//Player.chestX = (int)(((double)Player.position.X + (double)Player.width * 0.5) / 16.0);
-					//Player.chestY = (int)(((double)Player.position.Y + (double)Player.height * 0.5) / 16.0);
-					//IProjectileSource source;
-					//source = Player.GetProjectileSource_Item(Item);
-					//Projectile.NewProjectile(source,Player.position,Vector2.Zero,734,0,0);
-					//if (Main.projectile[Player.voidLensChest]!= null) {
-					//	Main.projectile[Player.voidLensChest].active = true;
-					//	Main.projectile[Player.voidLensChest].type = 734;
-					//}
-					//Player.voidLensChest = 0;
-
-					Player.IsVoidVaultEnabled = true;
-
-					//Player.voidLensChest = 1;
-					//hasPrinted = true;
-				}
-			}*/
+			
 
 			updateCounter++;
 			if (Player.HasBuff(ModContent.BuffType<RavenousBuff>())) {
@@ -416,6 +375,7 @@ namespace QoLPrime.Content.Players
             {
 				updateCounter = 0;
             }
+			firstRun = false;
 		}
 		public static int? GetIndexOfItemInInventory(ModItem item, Player player)
         {
@@ -455,6 +415,7 @@ namespace QoLPrime.Content.Players
             if (QoLPrime.printSpawnRate.JustReleased)
             {
 				Main.NewText($"{QoLPrime.checkSpawnRate}");
+				Main.NewText(QoLPrime.backpackPublic.Count());
 			}
 			if (QoLPrime.quickStackHotkey.JustPressed)
 			{
@@ -467,7 +428,13 @@ namespace QoLPrime.Content.Players
 					Player.QuickStackAllChests();
 				}
 			}
-			base.ProcessTriggers(triggersSet);
+			bool depositAllPressed = QoLPrime.depositAllHotkey.JustPressed;
+			if (depositAllPressed)
+			{ ChestUI.DepositAll(); }
+			bool lootAllPressed = QoLPrime.lootAllHotkey.JustPressed;
+			if (lootAllPressed)
+			{ ChestUI.LootAll(); }
+				base.ProcessTriggers(triggersSet);
         }
 		public static void DebugHotkeys(TriggersSet triggersSet)
         {

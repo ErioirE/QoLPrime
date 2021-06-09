@@ -259,7 +259,7 @@ namespace QoLPrime.Content.UI
 			Item[] inv = null;
 
 				context = 4;
-				inv = player.bank4.item;
+				inv = PlayerModification.backpack.item;
 
 			Main.inventoryScale = 0.755f;
 			if (Utils.FloatIntersect(Main.mouseX, Main.mouseY, 0f, 0f, 73f, customInvBottom, 560f * Main.inventoryScale, 224f * Main.inventoryScale) && !PlayerInput.IgnoreMouseInterface)
@@ -288,18 +288,49 @@ namespace QoLPrime.Content.UI
 		{
 			GetItemSettings lootAllSettings = GetItemSettings.LootAllSettings;
 			Player player = Main.player[Main.myPlayer];
-			
 
+            if (player.chest == -1)
+            {
 				for (int l = 0; l < 40; l++)
 				{
-					if (player.bank4.item[l].type > 0)
+					if (PlayerModification.backpack.item[l].type > 0)
 					{
-						player.bank4.item[l].position = player.Center;
-						player.bank4.item[l] = player.GetItem(Main.myPlayer, player.bank4.item[l], lootAllSettings);
+						PlayerModification.backpack.item[l].position = player.Center;
+						PlayerModification.backpack.item[l] = player.GetItem(Main.myPlayer, PlayerModification.backpack.item[l], lootAllSettings);
 					}
 				}
 
 				return;
+			}
+            else
+            {
+				for (int m = 0; m < 40; m++)
+				{
+
+                        for (int k = 0; k < 40; k++)
+                        {
+							if (Main.chest[player.chest].item[m].type != 0) {
+								if (PlayerModification.backpack.item[k].type == 0)
+								{
+									SoundEngine.PlaySound(7);
+									PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, Main.chest[player.chest].item[m], Main.chest[player.chest].item[m].stack);
+									PlayerModification.backpack.item[k] = Main.chest[player.chest].item[m].Clone();
+									Main.chest[player.chest].item[m].SetDefaults();
+									break;
+								}
+								else if (TryPlacingInChest(Main.chest[player.chest].item[m], PlayerModification.backpack))
+								{
+									SoundEngine.PlaySound(7);
+									break;
+								}
+							}
+
+						}
+						
+					
+				}
+			}
+
 			
 
 		}
@@ -308,117 +339,91 @@ namespace QoLPrime.Content.UI
 		{
 			Player player = Main.player[Main.myPlayer];
 
-				MoveCoins(player.inventory, player.bank4.item);
+				
 
-			for (int num = 49; num >= 10; num--)
+			for (int num = 39; num >= 0; num--)
 			{
-				if (player.inventory[num].stack > 0 && player.inventory[num].type > 0 && !player.inventory[num].favorited)
+				if (PlayerModification.backpack.item[num].stack > 0 && PlayerModification.backpack.item[num].type > 0 && !PlayerModification.backpack.item[num].favorited)
 				{
-					if (player.inventory[num].maxStack > 1)
-					{
-						for (int i = 0; i < 40; i++)
+					if (player.chest != -1) {
+						if (PlayerModification.backpack.item[num].maxStack > 1)
 						{
-							
-							
-							
+							for (int i = 0; i < 40; i++)
+							{
 
-								if (player.bank4.item[i].stack < player.bank4.item[i].maxStack && player.inventory[num].IsTheSameAs(player.bank4.item[i]))
+
+
+
+								if (Main.chest[player.chest].item[i].stack < Main.chest[player.chest].item[i].maxStack && PlayerModification.backpack.item[num].IsTheSameAs(Main.chest[player.chest].item[i]))
 								{
-									int num5 = player.inventory[num].stack;
-									if (player.inventory[num].stack + player.bank4.item[i].stack > player.bank4.item[i].maxStack)
-										num5 = player.bank4.item[i].maxStack - player.bank4.item[i].stack;
+									int num5 = PlayerModification.backpack.item[num].stack;
+									if (PlayerModification.backpack.item[num].stack + Main.chest[player.chest].item[i].stack > Main.chest[player.chest].item[i].maxStack)
+										num5 = Main.chest[player.chest].item[i].maxStack - Main.chest[player.chest].item[i].stack;
 
-									player.inventory[num].stack -= num5;
-									player.bank4.item[i].stack += num5;
+									PlayerModification.backpack.item[num].stack -= num5;
+									PlayerModification.backpack.item[i].stack += num5;
 									SoundEngine.PlaySound(7);
-									if (player.inventory[num].stack <= 0)
+									if (PlayerModification.backpack.item[num].stack <= 0)
 									{
-										player.inventory[num].SetDefaults();
+										PlayerModification.backpack.item[num].SetDefaults();
 										break;
 									}
 
-									if (player.bank4.item[i].type == 0)
+									if (Main.chest[player.chest].item[i].type == 0)
 									{
-										player.bank4.item[i] = player.inventory[num].Clone();
-										player.inventory[num].SetDefaults();
+										Main.chest[player.chest].item[i] = PlayerModification.backpack.item[num].Clone();
+										PlayerModification.backpack.item[num].SetDefaults();
+									}
+								}
+								else if (Main.chest[player.chest].item[i].type == ItemID.None)
+                                {
+									Main.chest[player.chest].item[i] = PlayerModification.backpack.item[num].Clone();
+									PlayerModification.backpack.item[num].SetDefaults();
+								}
+
+
+							}
+						}
+						else if (PlayerModification.backpack.item[num].stack > 0)
+						{
+
+								for (int m = 0; m < 40; m++)
+								{
+									if (Main.chest[player.chest].item[m].stack == 0)
+									{
+										SoundEngine.PlaySound(7);
+										Main.chest[player.chest].item[m] = PlayerModification.backpack.item[num].Clone();
+										PlayerModification.backpack.item[num].SetDefaults();
+										break;
 									}
 								}
 							
-							
+
 						}
 					}
+					
+				}
+				
+			}
+            for (int num = 49; num >= 10; num--)
+            {
+				if (player.inventory[num].stack > 0 && player.chest == -1)
+				{
 
-					if (player.inventory[num].stack > 0)
+					if (PlayerModification.backpackEnabled)
 					{
-						if (player.chest > -1)
+						for (int m = 0; m < 40; m++)
 						{
-							for (int j = 0; j < 40; j++)
+							if (PlayerModification.backpack.item[m].stack == 0 && !player.inventory[num].favorited)
 							{
-								if (Main.chest[player.chest].item[j].stack == 0)
-								{
-									SoundEngine.PlaySound(7);
-									Main.chest[player.chest].item[j] = player.inventory[num].Clone();
-									player.inventory[num].SetDefaults();
-									if (Main.netMode == 1)
-										NetMessage.SendData(32, -1, -1, null, player.chest, j);
-
-									break;
-								}
-							}
-						}
-						else if (player.chest == -3)
-						{
-							for (int k = 0; k < 40; k++)
-							{
-								if (player.bank2.item[k].stack == 0)
-								{
-									SoundEngine.PlaySound(7);
-									player.bank2.item[k] = player.inventory[num].Clone();
-									player.inventory[num].SetDefaults();
-									break;
-								}
-							}
-						}
-						else if (player.chest == -4)
-						{
-							for (int l = 0; l < 40; l++)
-							{
-								if (player.bank3.item[l].stack == 0)
-								{
-									SoundEngine.PlaySound(7);
-									player.bank3.item[l] = player.inventory[num].Clone();
-									player.inventory[num].SetDefaults();
-									break;
-								}
-							}
-						}
-						else if (player.chest == -5)
-						{
-							for (int m = 0; m < 40; m++)
-							{
-								if (player.bank4.item[m].stack == 0)
-								{
-									SoundEngine.PlaySound(7);
-									player.bank4.item[m] = player.inventory[num].Clone();
-									player.inventory[num].SetDefaults();
-									break;
-								}
-							}
-						}
-						else
-						{
-							for (int n = 0; n < 40; n++)
-							{
-								if (player.bank.item[n].stack == 0)
-								{
-									SoundEngine.PlaySound(7);
-									player.bank.item[n] = player.inventory[num].Clone();
-									player.inventory[num].SetDefaults();
-									break;
-								}
+								SoundEngine.PlaySound(7);
+								PlayerModification.backpack.item[m] = player.inventory[num].Clone();
+								player.inventory[num].SetDefaults();
+								break;
 							}
 						}
 					}
+
 				}
 			}
 		}
@@ -427,7 +432,7 @@ namespace QoLPrime.Content.UI
 		{
 			Player player = Main.player[Main.myPlayer];
 			if (player.chest == -5)
-				MoveCoins(player.inventory, player.bank4.item);
+				MoveCoins(player.inventory, PlayerModification.backpack.item);
 			else if (player.chest == -4)
 				MoveCoins(player.inventory, player.bank3.item);
 			else if (player.chest == -3)
@@ -436,7 +441,7 @@ namespace QoLPrime.Content.UI
 				MoveCoins(player.inventory, player.bank.item);
 
 			Item[] inventory = player.inventory;
-			Item[] item = player.bank4.item;
+			Item[] item = PlayerModification.backpack.item;
 
 			List<int> list = new List<int>();
 			List<int> list2 = new List<int>();
@@ -600,7 +605,7 @@ namespace QoLPrime.Content.UI
 		{
 			Player player = Main.player[Main.myPlayer];
 			Item[] inventory = player.inventory;
-			Item[] item = player.bank4.item;
+			Item[] item = PlayerModification.backpack.item;
 
 			HashSet<int> hashSet = new HashSet<int>();
 			List<int> list = new List<int>();
@@ -881,9 +886,9 @@ namespace QoLPrime.Content.UI
 				SoundEngine.PlaySound(7);
 		}
 
-		public static bool TryPlacingInChest(Item I, bool justCheck)
+		public static bool TryPlacingInChest(Item I,Chest chest, bool justCheck = false)
 		{
-			GetContainerUsageInfo(out bool sync, out Item[] chestinv);
+			GetContainerUsageInfo(chest,out bool sync, out Item[] chestinv);
 			if (IsBlockedFromTransferIntoChest(I, chestinv))
 				return false;
 
@@ -921,6 +926,10 @@ namespace QoLPrime.Content.UI
 					if (chestinv[i].type == 0)
 					{
 						chestinv[i] = I.Clone();
+						if (chest == PlayerModification.backpack)
+						{
+							PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, I, I.stack);
+						}
 						I.SetDefaults();
 					}
 
@@ -944,6 +953,10 @@ namespace QoLPrime.Content.UI
 
 					SoundEngine.PlaySound(7);
 					chestinv[j] = I.Clone();
+                    if (chest == PlayerModification.backpack)
+                    {
+						PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, I, I.stack);
+					}
 					I.SetDefaults();
 					if (sync)
 						NetMessage.SendData(32, -1, -1, null, player.chest, j);
@@ -955,11 +968,11 @@ namespace QoLPrime.Content.UI
 			return flag;
 		}
 
-		public static void GetContainerUsageInfo(out bool sync, out Item[] chestinv)
+		public static void GetContainerUsageInfo(Chest chestToCheck, out bool sync, out Item[] chestinv)
 		{
 			sync = false;
 			Player player = Main.player[Main.myPlayer];
-			chestinv = player.bank4.item;
+			chestinv = chestToCheck.item;
 			
 		}
 
@@ -979,7 +992,7 @@ namespace QoLPrime.Content.UI
 			bool flag = false;
 			Player player = Main.player[Main.myPlayer];
 			Item[] inventory = player.inventory;
-			Item[] item = player.bank4.item;
+			Item[] item = PlayerModification.backpack.item;
 			
 
 			Item item2 = item[slot];
