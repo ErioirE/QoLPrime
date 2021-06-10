@@ -32,11 +32,27 @@ namespace QoLPrime
         public static Dictionary<string, Item[]> backpackPublic;
         public static string[] customDeathMessages;
 
-
+        public static Dictionary<string, string> settings = new Dictionary<string, string>() { { "enableBackpack", "true" }, { "autoQuickStackToBackpack", "true" }, { "replaceDeathMessagesWithCustom", "false" }, { "spawnrate", "1.5" } };
 
         public QoLPrime()
         {
-            string deathMessagesConfig = File.ReadAllText(ModLoader.ModPath + "/deathMessages.txt");
+            string configPath = ModLoader.ModPath + "/QoLPrimeConf/config.ini";
+            string deathMessagePath = ModLoader.ModPath + "/QoLPrimeConf/deathMessages.txt";
+            if (!Directory.Exists(Path.GetDirectoryName(deathMessagePath)))
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(deathMessagePath));
+            }
+            if (File.Exists(configPath) && new FileInfo(configPath).Length / 64 >= 1)
+            {
+                settings = GetSettingsFromIni(configPath);
+            }
+            else
+            {
+                File.WriteAllText(configPath, InitializeDefaultSettings(settings));
+            }
+
+            File.Copy(@"C:\Users\dsteinberg\Documents\My Games\Terraria\ModLoader\Beta\Mod Sources\QoLPrime\deathMessages.txt", deathMessagePath, true);
+            string deathMessagesConfig = File.ReadAllText(deathMessagePath);
             customDeathMessages = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(deathMessagesConfig);
             QoLPrime.Instance = this;
             if (backpackPublic == null)
@@ -115,7 +131,7 @@ namespace QoLPrime
                 On.Terraria.Player.PullItem_Pickup += Detours.pullItemPickupHijack;
             }
             PickupItem = typeof(Player).GetMethod("PickupItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
-            if (PullItem_Pickup != null)
+            if (PickupItem != null)
             {
                 pickupItemHook = new Hook(PickupItem, typeof(Detours).GetMethod("PickupItemHijack"));
                 pickupItemHook.Apply();
@@ -131,6 +147,9 @@ namespace QoLPrime
             On.Terraria.UI.ChestUI.DepositAll += Detours.DepositAllHijack;
             On.Terraria.UI.ChestUI.LootAll += Detours.LootAllHijack;
             On.Terraria.DataStructures.PlayerDeathReason.GetDeathText += Detours.DeathReasonHijack;
+            On.Terraria.UI.ItemSlot.OverrideHover_ItemArray_int_int += Detours.OverrideHoverHijack;
+            On.Terraria.UI.ItemSlot.OverrideHover_refItem_int += Detours.OverrideHoverHijack;
+            On.Terraria.UI.ItemSlot.OverrideLeftClick += Detours.OverrideLeftClick;
 
         }
 
@@ -148,6 +167,16 @@ namespace QoLPrime
             }
             return toReturn;
         }
+        static string InitializeDefaultSettings(Dictionary<string, string> settings)
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(settings);
+        }
+        public static Dictionary<string, string> GetSettingsFromIni(string path)
+        {
+            Dictionary<string, string> toReturn = new Dictionary<string, string>();
+            toReturn = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(path));
+            return toReturn;
+        }
 
     }
     internal enum ExampleModMessageType : byte
@@ -155,6 +184,8 @@ namespace QoLPrime
         ExamplePlayerSyncPlayer,
         ExampleTeleportToStatue
     }
+
+
     class SpawnRateMultiplierGlobalNPC : GlobalNPC
     {
         static float multiplier = 1.5f;

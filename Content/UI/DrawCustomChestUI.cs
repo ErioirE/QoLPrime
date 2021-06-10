@@ -30,6 +30,8 @@ namespace QoLPrime.Content.UI
             public const int Count = 7;
         }
 
+        public Item[] offsetVersion = new Item[50];
+
         public const float buttonScaleMinimum = 0.75f;
         public const float buttonScaleMaximum = 1f;
         public static float[] ButtonScale = new float[7];
@@ -106,7 +108,7 @@ namespace QoLPrime.Content.UI
         {
             for (int i = 0; i < 5; i++)
             {
-                DrawButton(spritebatch, i, 506, customInvBottom + 60);
+                DrawButton(spritebatch, i, 506, customInvBottom + 50);
             }
         }
 
@@ -129,7 +131,7 @@ namespace QoLPrime.Content.UI
             if (ID == 7)
                 num = 5;
 
-            Y += num * 18;
+            Y += num * 25;
             float num2 = ButtonScale[ID];
             string text = "";
             switch (ID)
@@ -249,11 +251,16 @@ namespace QoLPrime.Content.UI
 
         private static void DrawSlots(SpriteBatch spriteBatch)
         {
-            Player player = Main.player[Main.myPlayer];
             int context = 0;
+            Player player = Main.player[Main.myPlayer];
+            if (player.chest == -1)
+            {
+                context = 4;
+            }
             Item[] inv = null;
+            int offset;
 
-            context = 4;
+
             inv = PlayerModification.backpack.item;
 
             Main.inventoryScale = 0.755f;
@@ -270,14 +277,15 @@ namespace QoLPrime.Content.UI
                     new Color(100, 100, 100, 100);
                     if (Utils.FloatIntersect(Main.mouseX, Main.mouseY, 0f, 0f, num, num2, (float)TextureAssets.InventoryBack.Width() * Main.inventoryScale, (float)TextureAssets.InventoryBack.Height() * Main.inventoryScale) && !PlayerInput.IgnoreMouseInterface)
                     {
-                        player.mouseInterface = true;
-                        ItemSlot.Handle(inv, context, slot);
-                    }
 
-                    ItemSlot.Draw(spriteBatch, inv, context, slot, new Vector2(num, num2));
+                        player.mouseInterface = true;
+                        CustomItemSlot.Handle(inv, context, slot);
+                    }
+                    CustomItemSlot.Draw(spriteBatch, inv, context, slot, new Vector2(num, num2));
                 }
             }
         }
+
 
         public static void LootAll()
         {
@@ -299,24 +307,63 @@ namespace QoLPrime.Content.UI
             }
             else
             {
+                Chest chestToLootFrom = null;
+                if (player.chest < -1)
+                {
+                    if (player.chest == -2)
+                    {
+                        chestToLootFrom = player.bank;
+
+                    }
+
+                    if (player.chest == -4)
+                    {
+                        chestToLootFrom = player.bank3;
+
+                    }
+
+                    if (player.chest == -5)
+                    {
+                        chestToLootFrom = player.bank4;
+
+                    }
+
+                    if (player.chest == -3)
+                    {
+                        chestToLootFrom = player.bank2;
+
+                    }
+                }
+                else if (player.chest > -1)
+                {
+                    chestToLootFrom = Main.chest[player.chest];
+                }
                 for (int m = 0; m < 40; m++)
                 {
 
                     for (int k = 0; k < 40; k++)
                     {
-                        if (Main.chest[player.chest].item[m].type != 0)
+                        if (chestToLootFrom.item[m].type != 0)
                         {
                             if (PlayerModification.backpack.item[k].type == 0)
                             {
                                 SoundEngine.PlaySound(7);
-                                PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, Main.chest[player.chest].item[m], Main.chest[player.chest].item[m].stack);
-                                PlayerModification.backpack.item[k] = Main.chest[player.chest].item[m].Clone();
-                                Main.chest[player.chest].item[m].SetDefaults();
+                                PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, chestToLootFrom.item[m], chestToLootFrom.item[m].stack);
+                                PlayerModification.backpack.item[k] = chestToLootFrom.item[m].Clone();
+                                chestToLootFrom.item[m].SetDefaults();
+                                if (player.chest > -1)
+                                {
+                                    Main.chest[player.chest] = chestToLootFrom;
+                                }
                                 break;
                             }
-                            else if (TryPlacingInChest(Main.chest[player.chest].item[m], PlayerModification.backpack))
+                            else if (TryPlacingInChest(chestToLootFrom.item[m], PlayerModification.backpack))
                             {
                                 SoundEngine.PlaySound(7);
+                                if (player.chest > -1)
+                                {
+                                    Main.chest[player.chest] = chestToLootFrom;
+                                }
                                 break;
                             }
                         }
@@ -325,6 +372,7 @@ namespace QoLPrime.Content.UI
 
 
                 }
+
             }
 
 
@@ -343,6 +391,65 @@ namespace QoLPrime.Content.UI
                 {
                     if (player.chest != -1)
                     {
+                        if (player.chest == -2)
+                        {
+                            Chest chest = player.bank;
+                            for (int j = 0; j < 40; j++)
+                            {
+
+                                if (TryPlacingInChest(PlayerModification.backpack.item[num], chest))
+                                {
+                                    SoundEngine.PlaySound(7);
+
+                                }
+
+                            }
+
+                        }
+
+                        if (player.chest == -4)
+                        {
+                            Chest chest2 = player.bank3;
+                            for (int k = 0; k < 40; k++)
+                            {
+                                if (TryPlacingInChest(PlayerModification.backpack.item[num], chest2))
+                                {
+                                    SoundEngine.PlaySound(7);
+
+                                }
+
+                            }
+
+                        }
+
+                        if (player.chest == -5)
+                        {
+                            Chest chest3 = player.bank4;
+                            for (int l = 0; l < 40; l++)
+                            {
+                                if (TryPlacingInChest(PlayerModification.backpack.item[num], chest3))
+                                {
+                                    SoundEngine.PlaySound(7);
+
+                                }
+
+                            }
+
+                        }
+
+                        if (player.chest == -3)
+                        {
+                            Chest chest4 = player.bank2;
+                            for (int m = 0; m < 40; m++)
+                            {
+                                if (TryPlacingInChest(PlayerModification.backpack.item[num], chest4))
+                                {
+                                    SoundEngine.PlaySound(7);
+                                }
+                            }
+
+
+                        }
                         if (PlayerModification.backpack.item[num].maxStack > 1)
                         {
                             for (int i = 0; i < 40; i++)
@@ -414,8 +521,9 @@ namespace QoLPrime.Content.UI
                             if (PlayerModification.backpack.item[m].stack == 0 && !player.inventory[num].favorited)
                             {
                                 SoundEngine.PlaySound(7);
-                                PlayerModification.backpack.item[m] = player.inventory[num].Clone();
-                                player.inventory[num].SetDefaults();
+                                TryPlacingInChest(player.inventory[num], PlayerModification.backpack);
+                                //PlayerModification.backpack.item[m] = player.inventory[num].Clone();
+                                //player.inventory[num].SetDefaults();
                                 break;
                             }
                         }
@@ -638,7 +746,7 @@ namespace QoLPrime.Content.UI
                     if (num2 >= 50)
                         context = 2;
 
-                    if (inventory[num2].netID != item[i].netID || ItemSlot.PickItemMovementAction(inventory, context, num2, item[i]) == -1)
+                    if (inventory[num2].netID != item[i].netID || CustomItemSlot.PickItemMovementAction(inventory, context, num2, item[i]) == -1)
                         continue;
 
                     int num3 = item[i].stack;
@@ -677,7 +785,7 @@ namespace QoLPrime.Content.UI
                     if (list2[k] >= 50)
                         context2 = 2;
 
-                    if (ItemSlot.PickItemMovementAction(inventory, context2, list2[k], item[i]) != -1)
+                    if (CustomItemSlot.PickItemMovementAction(inventory, context2, list2[k], item[i]) != -1)
                     {
                         Utils.Swap(ref inventory[list2[k]], ref item[i]);
                         if (Main.netMode == 1 && Main.player[Main.myPlayer].chest > -1)

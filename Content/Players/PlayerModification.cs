@@ -1,9 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using QoLPrime.Content.Buffs;
+using QoLPrime.Content.UI;
 using QoLPrime.Items;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameInput;
@@ -25,6 +25,9 @@ namespace QoLPrime.Content.Players
         public static PlayerModification instance;
         public static string name;
         public static Chest backpack;
+
+        static int before;
+        static int after;
         public PlayerModification()
         {
             instance = this;
@@ -309,6 +312,26 @@ namespace QoLPrime.Content.Players
 
         public override void PreUpdate()
         {
+            if (Main.anglerQuestFinished == true)
+            {
+                Main.AnglerQuestSwap();
+                Main.anglerQuestFinished = false;
+            }
+            if (updateCounter >= 60)
+            {
+                before = Detours.CountItems(Player.inventory);
+                updateCounter = 0;
+            }
+            else if (updateCounter == 30)
+            {
+                after = Detours.CountItems(Player.inventory);
+            }
+
+
+            if (after > before && Player.chest == -1 && PlayerModification.backpackEnabled && QoLPrime.settings["autoQuickStackToBackpack"] == "true")
+            {
+                DrawCustomChestUI.QuickStack();
+            }
             if (firstRun)
             {
                 if (!QoLPrime.backpackPublic.ContainsKey(this.Player.name))
@@ -413,7 +436,7 @@ namespace QoLPrime.Content.Players
             if (QoLPrime.printSpawnRate.JustReleased)
             {
                 Main.NewText($"{QoLPrime.checkSpawnRate}");
-                Main.NewText(QoLPrime.backpackPublic.Count());
+                QoLPrime.Instance.Logger.Info($"{string.Join(',', QoLPrime.settings)}");
             }
             if (QoLPrime.quickStackHotkey.JustPressed)
             {

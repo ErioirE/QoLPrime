@@ -1,1 +1,1 @@
-QoL Prime is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+QoL Prime: Inventory quality-of-life changes + a large assortment of other tweaks and fixes. (Most features are configurable through settings.)

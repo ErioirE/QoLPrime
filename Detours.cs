@@ -135,7 +135,10 @@ namespace QoLPrime
 
         public static void grabItemsHijack(On.Terraria.Player.orig_GrabItems orig, Terraria.Player self, int i)
         {
+            //int before = CountItems(self.inventory);
             orig(self, i);
+            //int after = CountItems(self.inventory);
+
 
             for (int j = 0; j < 400; j++)
             {
@@ -193,6 +196,7 @@ namespace QoLPrime
                     }
                 }
             }
+
         }
         public static void pullItemPickupHijack(On.Terraria.Player.orig_PullItem_Pickup orig, Player self, Item itemToPickUp, float speed, int acc)
         {
@@ -245,6 +249,8 @@ namespace QoLPrime
         }
         public static Item PickupItemHijack(On.Terraria.Player.orig_PickupItem orig, Player self, int playerIndex, int worldItemArrayIndex, Item itemToPickUp)
         {
+
+
             if (itemsToPack.Contains(itemToPickUp))
             {
 
@@ -255,7 +261,7 @@ namespace QoLPrime
                     {
                         if (DrawCustomChestUI.TryPlacingInChest(itemToPickUp, PlayerModification.backpack))
                         {
-                            QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.backpack.item[k].type)}");
+                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.backpack.item[k].type)}");
                             itemsToPack.Remove(itemToPickUp);
                             PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, itemToPickUp, itemToPickUp.stack);
                             return new Item();
@@ -271,13 +277,16 @@ namespace QoLPrime
                         }
                     }
                 }
+
                 return orig(self, playerIndex, worldItemArrayIndex, itemToPickUp);
 
             }
             else
             {
+
                 return orig(self, playerIndex, worldItemArrayIndex, itemToPickUp);
             }
+
         }
         public static NetworkText DeathReasonHijack(On.Terraria.DataStructures.PlayerDeathReason.orig_GetDeathText orig, PlayerDeathReason self, string deadPlayerName)
         {
@@ -316,6 +325,29 @@ namespace QoLPrime
             }
 
             return false;
+        }
+        public static int CountItems(Item[] inventoryToCount)
+        {
+            int count = 0;
+            for (int i = 0; i < inventoryToCount.Length; i++)
+            {
+                if (inventoryToCount[i].type != 0)
+                    count++;
+
+            }
+            return count;
+        }
+        public static void OverrideHoverHijack(On.Terraria.UI.ItemSlot.orig_OverrideHover_ItemArray_int_int orig, Item[] inv, int context = 0, int slot = 0)
+        {
+            CustomItemSlot.OverrideHover(inv,context,slot);
+        }
+        public static void OverrideHoverHijack(On.Terraria.UI.ItemSlot.orig_OverrideHover_refItem_int orig, ref Item inv, int context = 0)
+        {
+            CustomItemSlot.OverrideHover(ref inv, context);
+        }
+        public static bool OverrideLeftClick(On.Terraria.UI.ItemSlot.orig_OverrideLeftClick orig, Item[] inv, int context, int slot)
+        {
+            return CustomItemSlot.OverrideLeftClick(inv, context,slot);
         }
     }
 }
