@@ -3,56 +3,52 @@ using QoLPrime.Content.Buffs;
 using QoLPrime.Items;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Terraria;
 using Terraria.Audio;
-using Terraria.DataStructures;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 using Terraria.UI;
-using System.Linq;
-using Terraria.ModLoader.IO;
 
 namespace QoLPrime.Content.Players
 {
-	class PlayerModification : ModPlayer
-	{
-		//public static TagCompound savedData;
-		static bool firstRun = true;
-		public static bool backpackEnabled = true;
-		static bool hasPrinted = false;
-		
-		public static QuillRain mostRecentQuillRain;
-		public static int updateCounter = 0;
-		public static float fadeMultipler = 0f;
-		public static PlayerModification instance;
-		public static string name;
-		public static Chest backpack;
+    class PlayerModification : ModPlayer
+    {
+        //public static TagCompound savedData;
+        static bool firstRun = true;
+        public static bool backpackEnabled = true;
+        static bool hasPrinted = false;
+
+        public static QuillRain mostRecentQuillRain;
+        public static int updateCounter = 0;
+        public static float fadeMultipler = 0f;
+        public static PlayerModification instance;
+        public static string name;
+        public static Chest backpack;
         public PlayerModification()
         {
-			instance = this;
-			
-			//backpack = new Chest();
-			//backpack.item = QoLPrime.newEmptyChest();
-		}
-		public override void Initialize()
-		{
+            instance = this;
 
-
-
-
-		}
-		public override void Load()
+            //backpack = new Chest();
+            //backpack.item = QoLPrime.newEmptyChest();
+        }
+        public override void Initialize()
         {
 
-			
-		}
 
 
 
-		//On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
-		/*public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Player self)
+        }
+        public override void Load()
+        {
+
+
+        }
+
+
+
+        //On.Terraria.Player.HandleBeingInChestRange += chestRangeHijack;
+        /*public static void chestRangeHijack(On.Terraria.Player.orig_HandleBeingInChestRange orig, Player self)
         {
             if (self.chest != -5)
             {
@@ -62,8 +58,8 @@ namespace QoLPrime.Content.Players
 
 			}
         }*/
-		public static void quickStackAllHijack(On.Terraria.Player.orig_QuickStackAllChests orig, Player self)
-		{
+        public static void quickStackAllHijack(On.Terraria.Player.orig_QuickStackAllChests orig, Player self)
+        {
 
             orig(self);
             if (backpackEnabled)
@@ -90,57 +86,57 @@ namespace QoLPrime.Content.Players
                             else if (Main.tile[j, k].type == 491)
                                 num5 = -5;
 
-							if (num5 < 0 && (new Vector2(j * 16 + 8, k * 16 + 8) - self.Center).Length() < 250f)
-							{
-								//Main.NewText($"Items to QS from backpack, attempting detour...");
-								int num6 = self.chest;
-								self.chest = num5;
-								ChestUI.QuickStack();
-								self.chest = num6;
-							}
-						}
-					}
-				}
+                            if (num5 < 0 && (new Vector2(j * 16 + 8, k * 16 + 8) - self.Center).Length() < 250f)
+                            {
+                                //Main.NewText($"Items to QS from backpack, attempting detour...");
+                                int num6 = self.chest;
+                                self.chest = num5;
+                                ChestUI.QuickStack();
+                                self.chest = num6;
+                            }
+                        }
+                    }
+                }
 
-				if (Main.netMode == 1)
-				{
-					for (int l = 0; l < 40; l++)
-					{
-						if (PlayerModification.backpack.item[l].type > 0 && PlayerModification.backpack.item[l].stack > 0 && !PlayerModification.backpack.item[l].IsACoin)
-						{
-							NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)PlayerModification.backpack.item[l].prefix);
-							NetMessage.SendData(85, -1, -1, null, l);
-							self.inventoryChestStack[l] = true;
-						}
-					}
+                if (Main.netMode == 1)
+                {
+                    for (int l = 0; l < 40; l++)
+                    {
+                        if (PlayerModification.backpack.item[l].type > 0 && PlayerModification.backpack.item[l].stack > 0 && !PlayerModification.backpack.item[l].IsACoin)
+                        {
+                            NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)PlayerModification.backpack.item[l].prefix);
+                            NetMessage.SendData(85, -1, -1, null, l);
+                            self.inventoryChestStack[l] = true;
+                        }
+                    }
 
                     return;
                 }
 
-				bool flag = false;
-				for (int m = 0; m < 40; m++)
-				{
-					
-					if (PlayerModification.backpack.item[m].type > 0 && PlayerModification.backpack.item[m].stack > 0 && !PlayerModification.backpack.item[m].IsACoin)
-					{
-						int type = PlayerModification.backpack.item[m].type;
-						int stack = PlayerModification.backpack.item[m].stack;
-						//Main.NewText($"Items to QS from backpack, attempting detour...{PlayerModification.backpack.item[m].
-						//
-						//} * {PlayerModification.backpack.item[m].stack}");
+                bool flag = false;
+                for (int m = 0; m < 40; m++)
+                {
 
-						Item itemTransferred = Chest.PutItemInNearbyChest(PlayerModification.backpack.item[m], self.Center);
-						//Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
-						PlayerModification.backpack.item[m] = itemTransferred;
-						if (PlayerModification.backpack.item[m].type != type || PlayerModification.backpack.item[m].stack != stack)
-							flag = true;
-					}
-				}
-				if (flag)
-					SoundEngine.PlaySound(7);
-			}
-		}
-		public static void QuickStackHijack(On.Terraria.UI.ChestUI.orig_QuickStack orig)
+                    if (PlayerModification.backpack.item[m].type > 0 && PlayerModification.backpack.item[m].stack > 0 && !PlayerModification.backpack.item[m].IsACoin)
+                    {
+                        int type = PlayerModification.backpack.item[m].type;
+                        int stack = PlayerModification.backpack.item[m].stack;
+                        //Main.NewText($"Items to QS from backpack, attempting detour...{PlayerModification.backpack.item[m].
+                        //
+                        //} * {PlayerModification.backpack.item[m].stack}");
+
+                        Item itemTransferred = Chest.PutItemInNearbyChest(PlayerModification.backpack.item[m], self.Center);
+                        //Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
+                        PlayerModification.backpack.item[m] = itemTransferred;
+                        if (PlayerModification.backpack.item[m].type != type || PlayerModification.backpack.item[m].stack != stack)
+                            flag = true;
+                    }
+                }
+                if (flag)
+                    SoundEngine.PlaySound(7);
+            }
+        }
+        public static void QuickStackHijack(On.Terraria.UI.ChestUI.orig_QuickStack orig)
         {
 
             Player player = Main.player[Main.myPlayer];
@@ -311,91 +307,93 @@ namespace QoLPrime.Content.Players
             }
         }
 
-		public override void PreUpdate()
+        public override void PreUpdate()
         {
             if (firstRun)
             {
-				if (!QoLPrime.backpackPublic.ContainsKey(this.Player.name))
-				{
-					backpack = new Chest();
-					for (int i = 0; i < backpack.item.Length; i++)
-					{
-						backpack.item[i] = new Item();
-					}
+                if (!QoLPrime.backpackPublic.ContainsKey(this.Player.name))
+                {
+                    backpack = new Chest();
+                    for (int i = 0; i < backpack.item.Length; i++)
+                    {
+                        backpack.item[i] = new Item();
+                    }
 
-				}
-				else
-				{				
-					backpack.item = QoLPrime.backpackPublic.GetValueOrDefault(this.Player.name);
-				}
-				firstRun = false;
-			}
-			
-			QoLPrime.backpackPublic[this.Player.name] = backpack.item;
-			//Mod.Logger.Info($"{string.Join(',',QoLPrime.backpackPublic.Keys)}");
-			if (!Player.HasBuff(ModContent.BuffType<RavenousBuff>()))
-			{
-				RavenousBuff.counter = 0;
-			}
-			if (backpackEnabled && updateCounter == 30)
-            {
-				int temp = Player.chest;
-				//Player.chest = -5;
-				//ChestUI.QuickStack();
-				Player.chest = temp;
-				if (QoLPrime.invBottom == 0) {
-					//QoLPrime.invBottom = Main.instance.invBottom;
-				}
-				
+                }
+                else
+                {
+                    backpack.item = QoLPrime.backpackPublic.GetValueOrDefault(this.Player.name);
+                }
+                firstRun = false;
             }
-			//Player.IsVoidVaultEnabled = true;
-			
 
-			if (PlayerInput.Triggers.JustPressed.Inventory && Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
-			{
-				//Player.chest = -5;
-			}
-			if (!hasPrinted)
-			{
-				//Player.inventory[4] = new Item(ModContent.ItemType<QuillRain>());
-				//Player.inventory[1].prefix = PrefixID.Unreal;
-				hasPrinted = true;
-				
-			}
-
-
-			
-
-			updateCounter++;
-			if (Player.HasBuff(ModContent.BuffType<RavenousBuff>())) {
-				fadeMultipler = 0.1f+(((Math.Abs(updateCounter - 30) * 30) / 90) / 10f);
-			}
-			//Main.NewText(fadeMultipler.ToString());
-			if (updateCounter >= 60)
+            QoLPrime.backpackPublic[this.Player.name] = backpack.item;
+            //Mod.Logger.Info($"{string.Join(',',QoLPrime.backpackPublic.Keys)}");
+            if (!Player.HasBuff(ModContent.BuffType<RavenousBuff>()))
             {
-				updateCounter = 0;
+                RavenousBuff.counter = 0;
             }
-			firstRun = false;
-		}
-		public static int? GetIndexOfItemInInventory(ModItem item, Player player)
+            if (backpackEnabled && updateCounter == 30)
+            {
+                int temp = Player.chest;
+                //Player.chest = -5;
+                //ChestUI.QuickStack();
+                Player.chest = temp;
+                if (QoLPrime.invBottom == 0)
+                {
+                    //QoLPrime.invBottom = Main.instance.invBottom;
+                }
+
+            }
+            //Player.IsVoidVaultEnabled = true;
+
+
+            if (PlayerInput.Triggers.JustPressed.Inventory && Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
+            {
+                //Player.chest = -5;
+            }
+            if (!hasPrinted)
+            {
+                //Player.inventory[4] = new Item(ModContent.ItemType<QuillRain>());
+                //Player.inventory[1].prefix = PrefixID.Unreal;
+                hasPrinted = true;
+
+            }
+
+
+
+
+            updateCounter++;
+            if (Player.HasBuff(ModContent.BuffType<RavenousBuff>()))
+            {
+                fadeMultipler = 0.1f + (((Math.Abs(updateCounter - 30) * 30) / 90) / 10f);
+            }
+            //Main.NewText(fadeMultipler.ToString());
+            if (updateCounter >= 60)
+            {
+                updateCounter = 0;
+            }
+            firstRun = false;
+        }
+        public static int? GetIndexOfItemInInventory(ModItem item, Player player)
         {
-			int i = 0;
+            int i = 0;
             foreach (Item invItem in player.inventory)
             {
                 if (invItem == item.Item)
                 {
-					return i;
+                    return i;
                 }
-				i++;
+                i++;
             }
-			return null;
+            return null;
         }
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             //DebugHotkeys(triggersSet);
 
-			
-			bool backpackTogglePressed = QoLPrime.backpackToggle.JustPressed;
+
+            bool backpackTogglePressed = QoLPrime.backpackToggle.JustPressed;
             if (backpackTogglePressed)
             {
                 backpackEnabled = !backpackEnabled;
@@ -403,38 +401,38 @@ namespace QoLPrime.Content.Players
 
                 if (backpackEnabled)
                 {
-					//Player.chest = -5;
-					//Main.NewText($"{string.Join(',', backpackInventory[0].Name)}");
-					
-				}
+                    //Player.chest = -5;
+                    //Main.NewText($"{string.Join(',', backpackInventory[0].Name)}");
+
+                }
                 else
                 {
-					Player.chest = -1;
-				}
+                    Player.chest = -1;
+                }
             }
             if (QoLPrime.printSpawnRate.JustReleased)
             {
-				Main.NewText($"{QoLPrime.checkSpawnRate}");
-				Main.NewText(QoLPrime.backpackPublic.Count());
-			}
-			if (QoLPrime.quickStackHotkey.JustPressed)
-			{
-				if (Main.LocalPlayer.chest != -1)
-				{
-					ChestUI.QuickStack();
-				}
-				else
-				{
-					Player.QuickStackAllChests();
-				}
-			}
-			bool depositAllPressed = QoLPrime.depositAllHotkey.JustPressed;
-			if (depositAllPressed)
-			{ ChestUI.DepositAll(); }
-			bool lootAllPressed = QoLPrime.lootAllHotkey.JustPressed;
-			if (lootAllPressed)
-			{ ChestUI.LootAll(); }
-				base.ProcessTriggers(triggersSet);
+                Main.NewText($"{QoLPrime.checkSpawnRate}");
+                Main.NewText(QoLPrime.backpackPublic.Count());
+            }
+            if (QoLPrime.quickStackHotkey.JustPressed)
+            {
+                if (Main.LocalPlayer.chest != -1)
+                {
+                    ChestUI.QuickStack();
+                }
+                else
+                {
+                    Player.QuickStackAllChests();
+                }
+            }
+            bool depositAllPressed = QoLPrime.depositAllHotkey.JustPressed;
+            if (depositAllPressed)
+            { ChestUI.DepositAll(); }
+            bool lootAllPressed = QoLPrime.lootAllHotkey.JustPressed;
+            if (lootAllPressed)
+            { ChestUI.LootAll(); }
+            base.ProcessTriggers(triggersSet);
         }
         public static void DebugHotkeys(TriggersSet triggersSet)
         {

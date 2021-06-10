@@ -1,12 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using QoLPrime.Content.Players;
 using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using System;
-using QoLPrime.Items;
-using Terraria.DataStructures;
-using QoLPrime.Content.Players;
 
 namespace QoLPrime.Content.Projectiles
 {
@@ -85,19 +82,20 @@ namespace QoLPrime.Content.Projectiles
             }
             else
             {
-				if (!boosted) {
-					Projectile.damage += 2;
-					boosted = true;
-				}
-					
-				
-				// If found, change the velocity of the projectile and turn it in the direction of the target
-				// Use the SafeNormalize extension method to avoid NaNs returned by Vector2.Normalize when the vector is zero 
-				Vector2 target = (closest.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
-				Projectile.velocity = target * projSpeed;
-				float scaleFactor = Projectile.velocity.Length();
-				float targetAngle = Projectile.Center.AngleTo(target);
-				Vector2 thing1 = (Projectile.velocity.ToRotation().AngleTowards(targetAngle, (float)Math.PI / 180f).ToRotationVector2() * scaleFactor);
+                if (!boosted)
+                {
+                    Projectile.damage += 2;
+                    boosted = true;
+                }
+
+
+                // If found, change the velocity of the projectile and turn it in the direction of the target
+                // Use the SafeNormalize extension method to avoid NaNs returned by Vector2.Normalize when the vector is zero 
+                Vector2 target = (closest.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
+                Projectile.velocity = target * projSpeed;
+                float scaleFactor = Projectile.velocity.Length();
+                float targetAngle = Projectile.Center.AngleTo(target);
+                Vector2 thing1 = (Projectile.velocity.ToRotation().AngleTowards(targetAngle, (float)Math.PI / 180f).ToRotationVector2() * scaleFactor);
 
                 Projectile.rotation = thing1.ToRotation() + 1.5708f;
             }
@@ -114,19 +112,19 @@ namespace QoLPrime.Content.Projectiles
         {
             if (target.aiStyle == NPCAIStyleID.Bat)
             {
-				var maxLife = target.lifeMax;
-				target.AddBuff(BuffID.Ichor,60);
-				target.AddBuff(BuffID.Poisoned, 250);
-                if (target.life <=0)
+                var maxLife = target.lifeMax;
+                target.AddBuff(BuffID.Ichor, 60);
+                target.AddBuff(BuffID.Poisoned, 250);
+                if (target.life <= 0)
                 {
-					PlayerModification.mostRecentQuillRain.BatsSlain += 1 + ((int)Math.Round((double)maxLife/100));	
+                    PlayerModification.mostRecentQuillRain.BatsSlain += 1 + ((int)Math.Round((double)maxLife / 100));
                 }
-			}
-			
-		}
-		public NPC FindClosestNPC(float maxDetectDistance)
-		{
-			NPC closestNPC = null;
+            }
+
+        }
+        public NPC FindClosestNPC(float maxDetectDistance)
+        {
+            NPC closestNPC = null;
 
             // Using squared values in distance checks will let us skip square root calculations, drastically improving this method's speed.
             float sqrMaxDetectDistance = maxDetectDistance * maxDetectDistance;

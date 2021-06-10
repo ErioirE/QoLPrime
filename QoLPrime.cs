@@ -36,7 +36,7 @@ namespace QoLPrime
 
         public QoLPrime()
         {
-            string deathMessagesConfig = File.ReadAllText(ModLoader.ModPath+"/deathMessages.txt");
+            string deathMessagesConfig = File.ReadAllText(ModLoader.ModPath + "/deathMessages.txt");
             customDeathMessages = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(deathMessagesConfig);
             QoLPrime.Instance = this;
             if (backpackPublic == null)
@@ -142,7 +142,7 @@ namespace QoLPrime
         public static Item[] newEmptyChest()
         {
             Item[] toReturn = new Item[40];
-            for (int i = 0; i<toReturn.Length; i++)
+            for (int i = 0; i < toReturn.Length; i++)
             {
                 toReturn[0] = new Item();
             }
