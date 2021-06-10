@@ -128,6 +128,10 @@ namespace QoLPrime
 			{
 				Main.instance.invBottom = QoLPrime.invBottom + QoLPrime.invBottomOffset;
 			}
+            else
+            {
+				Main.instance.invBottom = QoLPrime.invBottom;
+			}
 
 
 		}
