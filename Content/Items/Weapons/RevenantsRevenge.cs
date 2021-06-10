@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -10,8 +11,8 @@ using System.Collections.Generic;
 
 namespace QoLPrime.Items
 {
-	public class RevenantsRevenge : ModItem
-	{
+    public class RevenantsRevenge : ModItem
+    {
 
 		public override void SetStaticDefaults() 
 		{
@@ -19,7 +20,7 @@ namespace QoLPrime.Items
 			//Tooltip.SetDefault($"Use time: {Item.useTime}{Environment.NewLine}Applies a short ichor debuff.{Environment.NewLine}Converts arrows into high-velocity revenant arrows that are able to phase through thin barriers and seek out enemies.{Environment.NewLine}Revenant arrows seeking range increases for each consecutive enemy hit, at the cost of 5% reduced damage.");
 			DisplayName.SetDefault("The Revenant's Revenge");
 
-		}
+        }
 
 		public override string Texture => "QoLPrime/Assets/Textures/Items/RevenantsRevenge";
 		public int ammoUsed;
@@ -43,33 +44,33 @@ namespace QoLPrime.Items
 			Item.value = 01600000;
 			Item.knockBack = 1f;
 
-			// This Ammo is nonspecific. I want to modify what it shoots, however.
-			//Item.useAmmo = ModContent.ItemType<ExampleCustomAmmo>();
-		}
+            // This Ammo is nonspecific. I want to modify what it shoots, however.
+            //Item.useAmmo = ModContent.ItemType<ExampleCustomAmmo>();
+        }
 
-		public override bool Shoot(Player player, ProjectileSource_Item_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
-		{
+        public override bool Shoot(Player player, ProjectileSource_Item_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
 
-			
-			/*var ProjectileUsed = Projectile.NewProjectileDirect(source,Vector2.Zero,Vector2.Zero,type,damage,knockback);
+
+            /*var ProjectileUsed = Projectile.NewProjectileDirect(source,Vector2.Zero,Vector2.Zero,type,damage,knockback);
 			if (ProjectileUsed != null) {
 				ProjectileUsed.Kill();
 			}*/
-			
 
-			type = ModContent.ProjectileType<Content.Projectiles.RevenantRevengeProjectile>(); // or ProjectileID.FireArrow;
-			
-			// NewProjectile returns the index of the projectile it creates in the NewProjectile array.
-			// Here we are using it to gain access to the projectile object.
 
-			//int combinedDamage = Item.damage + source.Item.damage;
-			
-			int projectileID = Projectile.NewProjectile(source, position.X, position.Y,velocity.X,velocity.Y, type, damage, knockback, player.whoAmI);
-			Projectile projectile = Main.projectile[projectileID];
-			
-			// We do not want vanilla to spawn a duplicate projectile.
-			return false;
-		}
+            type = ModContent.ProjectileType<Content.Projectiles.RevenantRevengeProjectile>(); // or ProjectileID.FireArrow;
+
+            // NewProjectile returns the index of the projectile it creates in the NewProjectile array.
+            // Here we are using it to gain access to the projectile object.
+
+            //int combinedDamage = Item.damage + source.Item.damage;
+
+            int projectileID = Projectile.NewProjectile(source, position.X, position.Y, velocity.X, velocity.Y, type, damage, knockback, player.whoAmI);
+            Projectile projectile = Main.projectile[projectileID];
+
+            // We do not want vanilla to spawn a duplicate projectile.
+            return false;
+        }
 
 		public override void AddRecipes() 
 		{

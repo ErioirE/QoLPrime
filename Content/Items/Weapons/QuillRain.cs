@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using System;
 using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
@@ -70,21 +71,21 @@ namespace QoLPrime.Items
 			if (ProjectileUsed != null) {
 				ProjectileUsed.Kill();
 			}*/
-			
 
-			type = ModContent.ProjectileType<Content.Projectiles.QuillRainProjectile>(); // or ProjectileID.FireArrow;
 
-			Vector2 perturbedSpeed = new Vector2(velocity.X, velocity.Y).RotatedByRandom(MathHelper.ToRadians(8)); //12 is the spread in degrees, although like with Set Spread it's technically a 24 degree spread due to the fact that it's randomly between 12 degrees above and 12 degrees below your cursor.
-			Projectile.NewProjectile(source,position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockback, player.whoAmI); //create the projectile
-			return false; //makes sure it doesn't shoot the projectile again after this
-						  // NewProjectile returns the index of the projectile it creates in the NewProjectile array.
-						  // Here we are using it to gain access to the projectile object.
+            type = ModContent.ProjectileType<Content.Projectiles.QuillRainProjectile>(); // or ProjectileID.FireArrow;
 
-			//int combinedDamage = Item.damage + source.Item.damage;
+            Vector2 perturbedSpeed = new Vector2(velocity.X, velocity.Y).RotatedByRandom(MathHelper.ToRadians(8)); //12 is the spread in degrees, although like with Set Spread it's technically a 24 degree spread due to the fact that it's randomly between 12 degrees above and 12 degrees below your cursor.
+            Projectile.NewProjectile(source, position.X, position.Y, perturbedSpeed.X, perturbedSpeed.Y, type, damage, knockback, player.whoAmI); //create the projectile
+            return false; //makes sure it doesn't shoot the projectile again after this
+                          // NewProjectile returns the index of the projectile it creates in the NewProjectile array.
+                          // Here we are using it to gain access to the projectile object.
 
-			//int projectileID = Projectile.NewProjectile(source, position.X, position.Y,velocity.X,velocity.Y, type, damage, knockback, player.whoAmI);
-			//Projectile projectile = Main.projectile[projectileID];
-			
+            //int combinedDamage = Item.damage + source.Item.damage;
+
+            //int projectileID = Projectile.NewProjectile(source, position.X, position.Y,velocity.X,velocity.Y, type, damage, knockback, player.whoAmI);
+            //Projectile projectile = Main.projectile[projectileID];
+
 
 		}
 		public override void ModifyTooltips(List<TooltipLine> tooltips)

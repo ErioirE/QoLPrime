@@ -14,6 +14,7 @@ using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.GameInput;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.UI;
 using static Terraria.Player;
@@ -281,6 +282,12 @@ namespace QoLPrime
 			{
 				return orig(self, playerIndex, worldItemArrayIndex, itemToPickUp);
 			}
+        }
+		public static NetworkText DeathReasonHijack(On.Terraria.DataStructures.PlayerDeathReason.orig_GetDeathText orig, PlayerDeathReason self, string deadPlayerName)
+        {
+			int roll = Main.rand.Next(QoLPrime.customDeathMessages.Length);
+			return NetworkText.FromLiteral(deadPlayerName + QoLPrime.customDeathMessages[roll]);
+			
         }
 		public static ItemSpaceStatus ItemSpace(Item newItem, Item[] inventory)
         {
