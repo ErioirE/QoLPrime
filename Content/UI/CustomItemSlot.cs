@@ -271,7 +271,7 @@ namespace QoLPrime.Content.UI
                                     if (item.material)
                                         Main.cursorOverride = 9;
                                 }
-                                else if ((Main.player[Main.myPlayer].chest != -1  && ChestUI.TryPlacingInChest(item, justCheck: true))|| (PlayerModification.backpackEnabled && Main.player[Main.myPlayer].chest == -1 && DrawCustomChestUI.TryPlacingInChest(item,PlayerModification.backpack,true)))
+                                else if ((Main.player[Main.myPlayer].chest != -1  && ChestUI.TryPlacingInChest(item, justCheck: true))|| (PlayerModification.backpackEnabled && Main.player[Main.myPlayer].chest == -1 && DrawCustomChestUI.TryPlacingInChest(item,PlayerModification.instance.backpack,true)))
                                 {
                                     Main.cursorOverride = 9;
                                 }
@@ -466,7 +466,7 @@ namespace QoLPrime.Content.UI
                 {
                     if (Main.player[Main.myPlayer].chest == -1 && PlayerModification.backpackEnabled)
                     {
-                        DrawCustomChestUI.TryPlacingInChest(inv[slot],PlayerModification.backpack, justCheck: false);
+                        DrawCustomChestUI.TryPlacingInChest(inv[slot],PlayerModification.instance.backpack, justCheck: false);
                     }
                     else
                     {

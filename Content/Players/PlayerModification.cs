@@ -4,10 +4,13 @@ using QoLPrime.Content.UI;
 using QoLPrime.Items;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using Terraria.UI;
 
 namespace QoLPrime.Content.Players
@@ -15,7 +18,7 @@ namespace QoLPrime.Content.Players
     class PlayerModification : ModPlayer
     {
         //public static TagCompound savedData;
-        static bool firstRun = true;
+        bool firstRun = true;
         public static bool backpackEnabled = true;
         static bool hasPrinted = false;
 
@@ -24,14 +27,28 @@ namespace QoLPrime.Content.Players
         public static float fadeMultipler = 0f;
         public static PlayerModification instance;
         public static string name;
-        public static Chest backpack;
+        public Chest backpack;
 
         static int before;
         static int after;
         public PlayerModification()
         {
             instance = this;
-
+            backpack = new Chest();
+            for (int i = 0; i < backpack.item.Length; i++)
+            {
+                backpack.item[i] = new Item(ItemID.None);
+            }
+            firstRun = true;
+            /* foreach (string file in Directory.GetFiles(QoLPrime.dataDir))
+             {
+                 var ob = TagIO.FromFile(file, false);
+                 var whoa = TagIO.Deserialize<Item>(ob);
+                 if (whoa != null)
+                 {
+                     QoLPrime.Instance.Logger.Info(whoa);
+                 }
+             }*/
             //backpack = new Chest();
             //backpack.item = QoLPrime.newEmptyChest();
         }
@@ -105,9 +122,9 @@ namespace QoLPrime.Content.Players
                 {
                     for (int l = 0; l < 40; l++)
                     {
-                        if (PlayerModification.backpack.item[l].type > 0 && PlayerModification.backpack.item[l].stack > 0 && !PlayerModification.backpack.item[l].IsACoin)
+                        if (PlayerModification.instance.backpack.item[l].type > 0 && PlayerModification.instance.backpack.item[l].stack > 0 && !PlayerModification.instance.backpack.item[l].IsACoin)
                         {
-                            NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)PlayerModification.backpack.item[l].prefix);
+                            NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)PlayerModification.instance.backpack.item[l].prefix);
                             NetMessage.SendData(85, -1, -1, null, l);
                             self.inventoryChestStack[l] = true;
                         }
@@ -120,18 +137,18 @@ namespace QoLPrime.Content.Players
                 for (int m = 0; m < 40; m++)
                 {
 
-                    if (PlayerModification.backpack.item[m].type > 0 && PlayerModification.backpack.item[m].stack > 0 && !PlayerModification.backpack.item[m].IsACoin)
+                    if (PlayerModification.instance.backpack.item[m].type > 0 && PlayerModification.instance.backpack.item[m].stack > 0 && !PlayerModification.instance.backpack.item[m].IsACoin)
                     {
-                        int type = PlayerModification.backpack.item[m].type;
-                        int stack = PlayerModification.backpack.item[m].stack;
-                        //Main.NewText($"Items to QS from backpack, attempting detour...{PlayerModification.backpack.item[m].
+                        int type = PlayerModification.instance.backpack.item[m].type;
+                        int stack = PlayerModification.instance.backpack.item[m].stack;
+                        //Main.NewText($"Items to QS from backpack, attempting detour...{PlayerModification.instance.backpack.item[m].
                         //
-                        //} * {PlayerModification.backpack.item[m].stack}");
+                        //} * {PlayerModification.instance.backpack.item[m].stack}");
 
-                        Item itemTransferred = Chest.PutItemInNearbyChest(PlayerModification.backpack.item[m], self.Center);
+                        Item itemTransferred = Chest.PutItemInNearbyChest(PlayerModification.instance.backpack.item[m], self.Center);
                         //Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
-                        PlayerModification.backpack.item[m] = itemTransferred;
-                        if (PlayerModification.backpack.item[m].type != type || PlayerModification.backpack.item[m].stack != stack)
+                        PlayerModification.instance.backpack.item[m] = itemTransferred;
+                        if (PlayerModification.instance.backpack.item[m].type != type || PlayerModification.instance.backpack.item[m].stack != stack)
                             flag = true;
                     }
                 }
@@ -148,7 +165,7 @@ namespace QoLPrime.Content.Players
             player.chest = startingChest;
             if (backpackEnabled)
             {
-                Item[] inventory = PlayerModification.backpack.item;
+                Item[] inventory = PlayerModification.instance.backpack.item;
                 Item[] item = player.bank.item;
                 if (player.chest > -1)
                 {
@@ -312,6 +329,10 @@ namespace QoLPrime.Content.Players
 
         public override void PreUpdate()
         {
+            if (QoLPrime.LastPlayer != Player.name)
+            {
+                QoLPrime.LastPlayer = Player.name;
+            }
             if (Main.anglerQuestFinished == true)
             {
                 Main.AnglerQuestSwap();
@@ -345,7 +366,11 @@ namespace QoLPrime.Content.Players
                 }
                 else
                 {
-                    backpack.item = QoLPrime.backpackPublic.GetValueOrDefault(this.Player.name);
+                    foreach (Item itemToUse in QoLPrime.backpackPublic.GetValueOrDefault(this.Player.name))
+                    {
+                        DrawCustomChestUI.TryPlacingInChest(itemToUse, backpack, false);
+                    }
+
                 }
                 firstRun = false;
             }

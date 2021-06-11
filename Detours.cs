@@ -172,7 +172,7 @@ namespace QoLPrime
                         continue;
 
                     ItemSpaceStatus status = self.ItemSpace(item);
-                    ItemSpaceStatus statusBackpack = ItemSpace(item, PlayerModification.backpack.item);
+                    ItemSpaceStatus statusBackpack = ItemSpace(item, PlayerModification.instance.backpack.item);
                     if (self.CanPullItem(item, status))
                     {
                         item.beingGrabbed = true;
@@ -257,11 +257,11 @@ namespace QoLPrime
                 for (int k = 0; k < 40; k++)
                 {
 
-                    if (PlayerModification.backpack.item[k].type == ItemID.None)
+                    if (PlayerModification.instance.backpack.item[k].type == ItemID.None)
                     {
-                        if (DrawCustomChestUI.TryPlacingInChest(itemToPickUp, PlayerModification.backpack))
+                        if (DrawCustomChestUI.TryPlacingInChest(itemToPickUp, PlayerModification.instance.backpack))
                         {
-                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.backpack.item[k].type)}");
+                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.instance.backpack.item[k].type)}");
                             itemsToPack.Remove(itemToPickUp);
                             PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, itemToPickUp, itemToPickUp.stack);
                             return new Item();
@@ -273,7 +273,7 @@ namespace QoLPrime
                     {
                         if (PlayerModification.updateCounter == 30)
                         {
-                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.backpack.item[k].type)}");
+                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.instance.backpack.item[k].type)}");
                         }
                     }
                 }

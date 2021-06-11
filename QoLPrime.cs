@@ -1,17 +1,23 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoMod.RuntimeDetour;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using QoLPrime.Content.Players;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 
 namespace QoLPrime
 {
     public class QoLPrime : Mod
     {
+        public static string LastPlayer = "UNSET";
         public const string AssetPath = "QoLPrime/Assets/";
         public static int currentBiome;
         static Texture2D value = TextureAssets.InventoryBack.Value;
@@ -33,11 +39,13 @@ namespace QoLPrime
         public static string[] customDeathMessages;
 
         public static Dictionary<string, string> settings = new Dictionary<string, string>() { { "enableBackpack", "true" }, { "autoQuickStackToBackpack", "true" }, { "replaceDeathMessagesWithCustom", "false" }, { "spawnrate", "1.5" } };
-
+        string configPath = ModLoader.ModPath + "/QoLPrimeConf/config.ini";
+        string deathMessagePath = ModLoader.ModPath + "/QoLPrimeConf/deathMessages.txt";
+        public static string dataDir = ModLoader.ModPath + "/QoLPrimeConf/bp/";
+        string dataLoc = ModLoader.ModPath + "/QoLPrimeConf/bp/";
         public QoLPrime()
         {
-            string configPath = ModLoader.ModPath + "/QoLPrimeConf/config.ini";
-            string deathMessagePath = ModLoader.ModPath + "/QoLPrimeConf/deathMessages.txt";
+
             if (!Directory.Exists(Path.GetDirectoryName(deathMessagePath)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(deathMessagePath));
@@ -55,25 +63,66 @@ namespace QoLPrime
             string deathMessagesConfig = File.ReadAllText(deathMessagePath);
             customDeathMessages = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(deathMessagesConfig);
             QoLPrime.Instance = this;
-            if (backpackPublic == null)
+            
+            /*if (backpackPublic == null)
             {
-                backpackPublic = new Dictionary<string, Item[]>();
-            }
-        }
+                    backpackPublic = new Dictionary<string, Item[]>();
+                    List<Item> itemsToLoad = new List<Item>();
+                    foreach (string file in Directory.GetFiles(dataDir))
+                    {
+                        TagCompound temp = TagIO.FromFile(file,false);
+                        itemsToLoad.Add(TagIO.Deserialize<Item>(temp));
+                    }
 
+                    backpackPublic[LastPlayer] = itemsToLoad.ToArray();
+            }*/
+        }
+        
         //TODO: Introduce OOP packets into tML, to avoid this god-class level hardcode.
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             ExampleModMessageType msgType = (ExampleModMessageType)reader.ReadByte();
-
+            
 
         }
         public static void setSpawnRateLabel(string label)
         {
             checkSpawnRate = label;
         }
+        public override void Close()
+        {
+
+
+
+
+
+
+            //TagIO.ToFile(list,dataLoc);
+
+            base.Close();
+        }
         public override void Load()
         {
+            if (backpackPublic == null)
+            {
+                backpackPublic = new Dictionary<string, Item[]>();
+                List<Item> itemsToLoad = new List<Item>();
+                string nameOfSourceChar = "";
+                foreach (string file in Directory.GetFiles(dataDir))
+                {
+                    var ob = TagIO.FromFile(file, false);
+                    var whoa = TagIO.Deserialize<Item>(ob);
+                    if (whoa != null)
+                    {
+                        itemsToLoad.Add(whoa);
+                    }
+                    string s = file.Substring(file.LastIndexOf("/") + 1);
+                    s = s.Substring(0, s.LastIndexOf("_"));
+                    nameOfSourceChar = s;
+                    
+                }
+                backpackPublic[nameOfSourceChar] = itemsToLoad.ToArray();
+            }
             quickStackHotkey = RegisterHotKey("Quick Stack/Quick Stack all", "OemSemicolon");
             backpackToggle = RegisterHotKey("Toggle Backpack", "OemTilde");
             printSpawnRate = RegisterHotKey("Print Spawn Rate", "OemBackslash");
@@ -155,9 +204,41 @@ namespace QoLPrime
 
         public override void Unload()
         {
-            QoLPrime.Instance = null;
-        }
+            List<TagCompound> tempObj = new List<TagCompound>();
+            if (backpackPublic.ContainsKey(LastPlayer)) {
+                foreach (Item currentItem in backpackPublic[LastPlayer])
+                {
+                    if (currentItem.type != 0)
+                        tempObj.Add(ItemIO.Save(currentItem));
+                }
+            }
+            
 
+            if (tempObj.Count > 0) {
+                int i = 0;
+                foreach (TagCompound tag in tempObj)
+                {
+                    TagIO.ToFile(tag, dataLoc+LastPlayer+"_"+i, false);
+                    i++;
+                }
+                
+
+
+
+                QoLPrime.Instance = null;
+
+            }
+            base.Unload();
+        }
+        public static byte[] ObjectToByteArray(Object obj)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, obj);
+                return ms.ToArray();
+            }
+        }
         public static Item[] newEmptyChest()
         {
             Item[] toReturn = new Item[40];

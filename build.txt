@@ -1,4 +1,4 @@
 displayName = QoL Prime
 author = Cracatoa
 version = 0.2
-dllReferences = FluentIL
+dllReferences = 
