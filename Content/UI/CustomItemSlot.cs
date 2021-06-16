@@ -221,7 +221,7 @@ namespace QoLPrime.Content.UI
             {
                 if (ControlInUse)
                 {
-                    if (item.type > 0 && item.stack > 0 && !inv[slot].favorited)
+                    if (item.type > ItemID.None && item.stack > 0 && !inv[slot].favorited)
                     {
                         switch (context)
                         {
@@ -248,7 +248,7 @@ namespace QoLPrime.Content.UI
                     if (Main.LocalPlayer.tileEntityAnchor.IsInValidUseTileEntity())
                         flag = Main.LocalPlayer.tileEntityAnchor.GetTileEntity().OverrideItemSlotHover(inv, context, slot);
 
-                    if (item.type > 0 && item.stack > 0 && !inv[slot].favorited && !flag)
+                    if (item.type > ItemID.None && item.stack > 0 && !inv[slot].favorited && !flag)
                     {
                         switch (context)
                         {
@@ -271,7 +271,7 @@ namespace QoLPrime.Content.UI
                                     if (item.material)
                                         Main.cursorOverride = 9;
                                 }
-                                else if ((Main.player[Main.myPlayer].chest != -1  && ChestUI.TryPlacingInChest(item, justCheck: true))|| (PlayerModification.backpackEnabled && Main.player[Main.myPlayer].chest == -1 && DrawCustomChestUI.TryPlacingInChest(item,PlayerModification.instance.backpack,true)))
+                                else if ((Main.player[Main.myPlayer].chest != -1  && ChestUI.TryPlacingInChest(item, justCheck: true))|| (PlayerModification.backpackEnabled && Main.player[Main.myPlayer].chest == -1 && DrawCustomChestUI.TryPlacingInChest(item,PlayerModification.backpack,true)))
                                 {
                                     Main.cursorOverride = 9;
                                 }
@@ -312,7 +312,7 @@ namespace QoLPrime.Content.UI
                 if (Main.LocalPlayer.tileEntityAnchor.IsInValidUseTileEntity())
                     flag2 = Main.LocalPlayer.tileEntityAnchor.GetTileEntity().OverrideItemSlotHover(inv, context, slot);
 
-                if (item.type > 0 && item.stack > 0 && !inv[slot].favorited && !flag2)
+                if (item.type > ItemID.None && item.stack > 0 && !inv[slot].favorited && !flag2)
                 {
                     switch (context)
                     {
@@ -379,9 +379,9 @@ namespace QoLPrime.Content.UI
 
             if (Main.keyState.IsKeyDown(Main.FavoriteKey) && (canFavoriteAt[context] || (Main.drawingPlayerChat && canShareAt[context])))
             {
-                if (item.type > 0 && item.stack > 0 && Main.drawingPlayerChat)
+                if (item.type > ItemID.None && item.stack > 0 && Main.drawingPlayerChat)
                     Main.cursorOverride = 2;
-                else if (item.type > 0 && item.stack > 0)
+                else if (item.type > ItemID.None && item.stack > 0)
                     Main.cursorOverride = 3;
             }
         }
@@ -466,7 +466,7 @@ namespace QoLPrime.Content.UI
                 {
                     if (Main.player[Main.myPlayer].chest == -1 && PlayerModification.backpackEnabled)
                     {
-                        DrawCustomChestUI.TryPlacingInChest(inv[slot],PlayerModification.instance.backpack, justCheck: false);
+                        DrawCustomChestUI.TryPlacingInChest(inv[slot],PlayerModification.backpack, justCheck: false);
                     }
                     else
                     {
@@ -509,7 +509,7 @@ namespace QoLPrime.Content.UI
             switch (num)
             {
                 case 0:
-                    if (context == 6 && Main.mouseItem.type != 0)
+                    if (context == 6 && Main.mouseItem.type != ItemID.None)
                         inv[slot].SetDefaults();
                     if (context == 11 && !inv[slot].FitsAccessoryVanitySlot)
                         break;
@@ -534,7 +534,7 @@ namespace QoLPrime.Content.UI
                                 break;
                         }
                     }
-                    if (inv[slot].type == 0 || inv[slot].stack < 1)
+                    if (inv[slot].type == ItemID.None || inv[slot].stack < 1)
                         inv[slot] = new Item();
                     if (Main.mouseItem.IsTheSameAs(inv[slot]))
                     {
@@ -554,9 +554,9 @@ namespace QoLPrime.Content.UI
                             }
                         }
                     }
-                    if (Main.mouseItem.type == 0 || Main.mouseItem.stack < 1)
+                    if (Main.mouseItem.type == ItemID.None || Main.mouseItem.stack < 1)
                         Main.mouseItem = new Item();
-                    if (Main.mouseItem.type > 0 || inv[slot].type > 0)
+                    if (Main.mouseItem.type > Terraria.ID.ItemID.None || inv[slot].type > ItemID.None)
                     {
                         Recipe.FindRecipes();
                         SoundEngine.PlaySound(7);

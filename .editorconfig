@@ -2,3 +2,6 @@
 
 # IDE0055: Fix formatting
 dotnet_diagnostic.IDE0055.severity = suggestion
+
+# ChangeMagicNumberToID: Change magic numbers into appropriate ID values
+dotnet_diagnostic.ChangeMagicNumberToID.severity = silent

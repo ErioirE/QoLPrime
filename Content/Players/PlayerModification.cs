@@ -27,7 +27,7 @@ namespace QoLPrime.Content.Players
         public static float fadeMultipler = 0f;
         public static PlayerModification instance;
         public static string name;
-        public Chest backpack;
+        public static Chest backpack;
 
         static int before;
         static int after;
@@ -122,9 +122,9 @@ namespace QoLPrime.Content.Players
                 {
                     for (int l = 0; l < 40; l++)
                     {
-                        if (PlayerModification.instance.backpack.item[l].type > 0 && PlayerModification.instance.backpack.item[l].stack > 0 && !PlayerModification.instance.backpack.item[l].IsACoin)
+                        if (PlayerModification.backpack.item[l].type > 0 && PlayerModification.backpack.item[l].stack > 0 && !PlayerModification.backpack.item[l].IsACoin)
                         {
-                            NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)PlayerModification.instance.backpack.item[l].prefix);
+                            NetMessage.SendData(5, -1, -1, null, self.whoAmI, l, (int)PlayerModification.backpack.item[l].prefix);
                             NetMessage.SendData(85, -1, -1, null, l);
                             self.inventoryChestStack[l] = true;
                         }
@@ -137,18 +137,18 @@ namespace QoLPrime.Content.Players
                 for (int m = 0; m < 40; m++)
                 {
 
-                    if (PlayerModification.instance.backpack.item[m].type > 0 && PlayerModification.instance.backpack.item[m].stack > 0 && !PlayerModification.instance.backpack.item[m].IsACoin)
+                    if (PlayerModification.backpack.item[m].type > 0 && PlayerModification.backpack.item[m].stack > 0 && !PlayerModification.backpack.item[m].IsACoin)
                     {
-                        int type = PlayerModification.instance.backpack.item[m].type;
-                        int stack = PlayerModification.instance.backpack.item[m].stack;
-                        //Main.NewText($"Items to QS from backpack, attempting detour...{PlayerModification.instance.backpack.item[m].
+                        int type = PlayerModification.backpack.item[m].type;
+                        int stack = PlayerModification.backpack.item[m].stack;
+                        //Main.NewText($"Items to QS from backpack, attempting detour...{PlayerModification.backpack.item[m].
                         //
-                        //} * {PlayerModification.instance.backpack.item[m].stack}");
+                        //} * {PlayerModification.backpack.item[m].stack}");
 
-                        Item itemTransferred = Chest.PutItemInNearbyChest(PlayerModification.instance.backpack.item[m], self.Center);
+                        Item itemTransferred = Chest.PutItemInNearbyChest(PlayerModification.backpack.item[m], self.Center);
                         //Main.NewText($"Item after transfer(?)...{itemTransferred.Name} * {itemTransferred.stack}");
-                        PlayerModification.instance.backpack.item[m] = itemTransferred;
-                        if (PlayerModification.instance.backpack.item[m].type != type || PlayerModification.instance.backpack.item[m].stack != stack)
+                        PlayerModification.backpack.item[m] = itemTransferred;
+                        if (PlayerModification.backpack.item[m].type != type || PlayerModification.backpack.item[m].stack != stack)
                             flag = true;
                     }
                 }
@@ -165,7 +165,7 @@ namespace QoLPrime.Content.Players
             player.chest = startingChest;
             if (backpackEnabled)
             {
-                Item[] inventory = PlayerModification.instance.backpack.item;
+                Item[] inventory = PlayerModification.backpack.item;
                 Item[] item = player.bank.item;
                 if (player.chest > -1)
                 {

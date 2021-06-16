@@ -20,8 +20,8 @@ namespace QoLPrime
         public static string LastPlayer = "UNSET";
         public const string AssetPath = "QoLPrime/Assets/";
         public static int currentBiome;
-        static Texture2D value = TextureAssets.InventoryBack.Value;
-        public static int invBottom = (int)((value.Bounds.Height * 6.5f) * Main.inventoryScale);
+        static Texture2D value;
+        public static int invBottom;
         public static int invBottomOffset = 165;
         public static ModHotKey backpackToggle;
         public static ModHotKey printSpawnRate;
@@ -45,7 +45,12 @@ namespace QoLPrime
         string dataLoc = ModLoader.ModPath + "/QoLPrimeConf/bp/";
         public QoLPrime()
         {
-
+            if (TextureAssets.InventoryBack != null)
+            {
+                value = TextureAssets.InventoryBack.Value;
+                invBottom = (int)((value.Bounds.Height * 6.5f) * Main.inventoryScale);
+            }
+            
             if (!Directory.Exists(Path.GetDirectoryName(deathMessagePath)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(deathMessagePath));

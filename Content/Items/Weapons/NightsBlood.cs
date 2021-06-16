@@ -24,7 +24,7 @@ namespace QoLPrime.Items
         string deathText = "";
         public static bool willHurt = false;
         public static float scaleToAddToIcon = 0f;
-        PlayerDeathReason reason;
+        //PlayerDeathReason reason;
         public override void SetDefaults()
         {
             Item.useTime = 10;

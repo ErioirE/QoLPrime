@@ -22,7 +22,7 @@ namespace QoLPrime
         public static Player qolPlayer = Main.LocalPlayer;
         public static int myPlayer = Main.myPlayer;
 
-        static List<Item> itemsToPack = new List<Item>();
+        static List<int> itemsToPack = new List<int>();
         public static void drawBestHijack(On.Terraria.Main.orig_DrawBestiaryIcon orig, int pivotTopLeftX, int pivotTopLeftY)
         {
             if (!PlayerModification.backpackEnabled)
@@ -172,7 +172,7 @@ namespace QoLPrime
                         continue;
 
                     ItemSpaceStatus status = self.ItemSpace(item);
-                    ItemSpaceStatus statusBackpack = ItemSpace(item, PlayerModification.instance.backpack.item);
+                    ItemSpaceStatus statusBackpack = ItemSpace(item, PlayerModification.backpack.item);
                     if (self.CanPullItem(item, status))
                     {
                         item.beingGrabbed = true;
@@ -191,7 +191,7 @@ namespace QoLPrime
                         {
 
                         }
-                        itemsToPack.Add(item);
+                        itemsToPack.Add(item.type);
                         QoLPrime.PullItem_Pickup.Invoke(self, new object[] { item, 12f, 5 });
                     }
                 }
@@ -251,18 +251,18 @@ namespace QoLPrime
         {
 
 
-            if (itemsToPack.Contains(itemToPickUp))
+            if (itemsToPack.Contains(itemToPickUp.type))
             {
 
                 for (int k = 0; k < 40; k++)
                 {
 
-                    if (PlayerModification.instance.backpack.item[k].type == ItemID.None)
+                    if (PlayerModification.backpack.item[k].type == ItemID.None)
                     {
-                        if (DrawCustomChestUI.TryPlacingInChest(itemToPickUp, PlayerModification.instance.backpack))
+                        if (DrawCustomChestUI.TryPlacingInChest(itemToPickUp, PlayerModification.backpack))
                         {
-                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.instance.backpack.item[k].type)}");
-                            itemsToPack.Remove(itemToPickUp);
+                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.backpack.item[k].type)}");
+                            itemsToPack.Remove(itemToPickUp.type);
                             PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, itemToPickUp, itemToPickUp.stack);
                             return new Item();
                         }
@@ -273,7 +273,7 @@ namespace QoLPrime
                     {
                         if (PlayerModification.updateCounter == 30)
                         {
-                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.instance.backpack.item[k].type)}");
+                            //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.backpack.item[k].type)}");
                         }
                     }
                 }
