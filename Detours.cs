@@ -22,7 +22,7 @@ namespace QoLPrime
         public static Player qolPlayer = Main.LocalPlayer;
         public static int myPlayer = Main.myPlayer;
 
-        static List<int> itemsToPack = new List<int>();
+        static List<Item> itemsToPack = new List<Item>();
         public static void drawBestHijack(On.Terraria.Main.orig_DrawBestiaryIcon orig, int pivotTopLeftX, int pivotTopLeftY)
         {
             if (!PlayerModification.backpackEnabled)
@@ -191,7 +191,7 @@ namespace QoLPrime
                         {
 
                         }
-                        itemsToPack.Add(item.type);
+                        itemsToPack.Add(item);
                         QoLPrime.PullItem_Pickup.Invoke(self, new object[] { item, 12f, 5 });
                     }
                 }
@@ -251,7 +251,7 @@ namespace QoLPrime
         {
 
 
-            if (itemsToPack.Contains(itemToPickUp.type))
+            if (itemsToPack.Contains(itemToPickUp))
             {
 
                 for (int k = 0; k < 40; k++)
@@ -262,7 +262,7 @@ namespace QoLPrime
                         if (DrawCustomChestUI.TryPlacingInChest(itemToPickUp, PlayerModification.backpack))
                         {
                             //QoLPrime.Instance.Logger.Info($"{string.Join(',', PlayerModification.backpack.item[k].type)}");
-                            itemsToPack.Remove(itemToPickUp.type);
+                            itemsToPack.Remove(itemToPickUp);
                             PopupText.NewText(PopupTextContext.ItemPickupToVoidContainer, itemToPickUp, itemToPickUp.stack);
                             return new Item();
                         }

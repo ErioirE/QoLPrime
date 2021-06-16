@@ -23,11 +23,11 @@ namespace QoLPrime
         static Texture2D value;
         public static int invBottom;
         public static int invBottomOffset = 165;
-        public static ModHotKey backpackToggle;
-        public static ModHotKey printSpawnRate;
-        public static ModHotKey quickStackHotkey;
-        public static ModHotKey depositAllHotkey;
-        public static ModHotKey lootAllHotkey;
+        public static ModKeybind backpackToggle;
+        public static ModKeybind printSpawnRate;
+        public static ModKeybind quickStackHotkey;
+        public static ModKeybind depositAllHotkey;
+        public static ModKeybind lootAllHotkey;
         public static bool inventoryOffsetAdjusted = false;
 
         public static MethodInfo PickupItem;
@@ -128,11 +128,11 @@ namespace QoLPrime
                 }
                 backpackPublic[nameOfSourceChar] = itemsToLoad.ToArray();
             }
-            quickStackHotkey = RegisterHotKey("Quick Stack/Quick Stack all", "OemSemicolon");
-            backpackToggle = RegisterHotKey("Toggle Backpack", "OemTilde");
-            printSpawnRate = RegisterHotKey("Print Spawn Rate", "OemBackslash");
-            depositAllHotkey = RegisterHotKey("Deposit All", "");
-            lootAllHotkey = RegisterHotKey("Loot All", "");
+            quickStackHotkey = KeybindLoader.RegisterKeybind(this,"Quick Stack/Quick Stack all", "OemSemicolon");
+            backpackToggle = KeybindLoader.RegisterKeybind(this,"Toggle Backpack", "OemTilde");
+            printSpawnRate = KeybindLoader.RegisterKeybind(this,"Print Spawn Rate", "OemBackslash");
+            depositAllHotkey = KeybindLoader.RegisterKeybind(this,"Deposit All", "");
+            lootAllHotkey = KeybindLoader.RegisterKeybind(this,"Loot All", "");
             if (backpackPublic == null)
             {
                 ///backpackPublic = new Dictionary<string, Item[]>();
