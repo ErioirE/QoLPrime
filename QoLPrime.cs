@@ -17,14 +17,15 @@ namespace QoLPrime
         static Texture2D value;
         public static int invBottom;
         public static int invBottomOffset = 165;
-
+        public static ModKeybind backpackToggle;
         public static ModKeybind printSpawnRate;
         public static ModKeybind quickStackHotkey;
         public static ModKeybind depositAllHotkey;
         public static ModKeybind lootAllHotkey;
+        public static bool inventoryOffsetAdjusted = false;
 
-
-
+        public static MethodInfo PickupItem;
+        public static MethodInfo PullItem_Pickup;
         public static string checkSpawnRate { get; private set; }
         public static QoLPrime Instance { get; private set; }
 
