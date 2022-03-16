@@ -16,6 +16,8 @@ namespace QoLPrime.Items
         public int BatsSlain = 0;
         private TagCompound _tagCompound;
         private int killsRequired = 100;
+        private static double percentage = 0;
+        public static int bonus = 0;
         public override void SetStaticDefaults()
         {
             // DisplayName.SetDefault("ThisBasedSword"); // By default, capitalization in classnames will add spaces to the display name. You can customize the display name here by uncommenting this line.
@@ -94,7 +96,17 @@ namespace QoLPrime.Items
                     indexForTooltip++;
                 }
             }
-            tooltips.Insert(indexForTooltip, new TooltipLine(QoLPrime.Instance, "batKillCount", $"Use time: {Item.useTime}{Environment.NewLine}(Shots from this weapon gain 50% less damage and knockback from arrows.){Environment.NewLine}\"Hello! Would you like to destroy some \'bats\' today?\"{Environment.NewLine}\"Bats\" exterminated: {(((Double)BatsSlain / (Double)killsRequired) * 100).ToString("0.##")}%"));
+            percentage = (((Double)BatsSlain / (Double)killsRequired) * 100);
+            int preBonus = (int)Math.Round(percentage / 20);
+            if (preBonus > 5)
+            {
+                bonus = 5;
+            }
+            else
+            {
+                bonus = preBonus;
+            }
+            tooltips.Insert(indexForTooltip, new TooltipLine(QoLPrime.Instance, "batKillCount", $"Use time: {Item.useTime}{Environment.NewLine}(Shots from this weapon gain 50% less damage and knockback from arrows.){Environment.NewLine}\"Hello! Would you like to destroy some \'bats\' today?\"{Environment.NewLine}\"Bats\" exterminated: {percentage.ToString("0.##")}%\"{Environment.NewLine}\"Bonus damage: {bonus}"));
 
 
             return;

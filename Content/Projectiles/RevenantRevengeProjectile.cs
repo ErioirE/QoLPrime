@@ -128,7 +128,7 @@ namespace QoLPrime.Content.Projectiles
                 {
 
                 }
-                if (tileAtLocation.Value.BlockType > 0)
+                if (tileAtLocation.Value.TileType != 0 && Main.tileSolid[tileAtLocation.Value.TileType])
                 {
 
                     collisionCount++;

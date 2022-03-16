@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using QoLPrime.Content.Players;
+using QoLPrime.Items;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -51,7 +52,7 @@ namespace QoLPrime.Content.Projectiles
 
                 if (!hasAccelerated)
                 {
-                    Projectile.damage = Projectile.damage / 2;
+                    Projectile.damage = (Projectile.damage / 2) + QuillRain.bonus;
                     Projectile.knockBack = Projectile.knockBack / 2;
                     int invert = rand.Next(0, 1);
                     if (invert > 0)
@@ -84,7 +85,7 @@ namespace QoLPrime.Content.Projectiles
             {
                 if (!boosted)
                 {
-                    Projectile.damage += 2;
+                    Projectile.damage += 2 + QuillRain.bonus;
                     boosted = true;
                 }
 
