@@ -101,13 +101,35 @@ namespace QoLPrime
         }
         public override void Load()
         {
-
-            quickStackHotkey = KeybindLoader.RegisterKeybind(this, "Quick Stack/Quick Stack all", "OemSemicolon");
-
-            printSpawnRate = KeybindLoader.RegisterKeybind(this, "Print Spawn Rate", "OemBackslash");
-            depositAllHotkey = KeybindLoader.RegisterKeybind(this, "Deposit All", "OemNone");
-            lootAllHotkey = KeybindLoader.RegisterKeybind(this, "Loot All", "OemNone");
-
+            if (backpackPublic == null)
+            {
+                backpackPublic = new Dictionary<string, Item[]>();
+                List<Item> itemsToLoad = new List<Item>();
+                string nameOfSourceChar = "";
+                foreach (string file in Directory.GetFiles(dataDir))
+                {
+                    var ob = TagIO.FromFile(file, false);
+                    var whoa = TagIO.Deserialize<Item>(ob);
+                    if (whoa != null)
+                    {
+                        itemsToLoad.Add(whoa);
+                    }
+                    string s = file.Substring(file.LastIndexOf("/") + 1);
+                    s = s.Substring(0, s.LastIndexOf("_"));
+                    nameOfSourceChar = s;
+                    
+                }
+                backpackPublic[nameOfSourceChar] = itemsToLoad.ToArray();
+            }
+            quickStackHotkey = KeybindLoader.RegisterKeybind(this,"Quick Stack/Quick Stack all", "OemSemicolon");
+            backpackToggle = KeybindLoader.RegisterKeybind(this,"Toggle Backpack", "OemTilde");
+            printSpawnRate = KeybindLoader.RegisterKeybind(this,"Print Spawn Rate", "OemBackslash");
+            depositAllHotkey = KeybindLoader.RegisterKeybind(this,"Deposit All", "OemNone");
+            lootAllHotkey = KeybindLoader.RegisterKeybind(this,"Loot All", "OemNone");
+            if (backpackPublic == null)
+            {
+                ///backpackPublic = new Dictionary<string, Item[]>();
+            }
             MonoModHooks.RequestNativeAccess();
 
             //Hook chestRangeHook = new Hook(typeof(Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
