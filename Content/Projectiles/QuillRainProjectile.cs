@@ -13,7 +13,7 @@ namespace QoLPrime.Content.Projectiles
     public class QuillRainProjectile : ModProjectile
     {
         float speedMod = 1f;
-        Vector2 originalVelocity;
+
         bool boosted = false;
         bool hasAccelerated = false;
         public override void SetStaticDefaults()

@@ -18,28 +18,19 @@ namespace QoLPrime.Content.Players
     class PlayerModification : ModPlayer
     {
         //public static TagCompound savedData;
-        bool firstRun = true;
-        public static bool backpackEnabled = true;
+
         static bool hasPrinted = false;
 
         public static QuillRain mostRecentQuillRain;
         public static int updateCounter = 0;
         public static float fadeMultipler = 0f;
         public static PlayerModification instance;
-        public static string name;
-        public static Chest backpack;
 
-        static int before;
-        static int after;
         public PlayerModification()
         {
             instance = this;
-            backpack = new Chest();
-            for (int i = 0; i < backpack.item.Length; i++)
-            {
-                backpack.item[i] = new Item(ItemID.None);
-            }
-            firstRun = true;
+
+
             /* foreach (string file in Directory.GetFiles(QoLPrime.dataDir))
              {
                  var ob = TagIO.FromFile(file, false);
@@ -101,25 +92,11 @@ namespace QoLPrime.Content.Players
             {
                 RavenousBuff.counter = 0;
             }
-            if (backpackEnabled && updateCounter == 30)
-            {
-                int temp = Player.chest;
-                //Player.chest = -5;
-                //ChestUI.QuickStack();
-                Player.chest = temp;
-                if (QoLPrime.invBottom == 0)
-                {
-                    //QoLPrime.invBottom = Main.instance.invBottom;
-                }
 
-            }
             //Player.IsVoidVaultEnabled = true;
 
 
-            if (PlayerInput.Triggers.JustPressed.Inventory && Player.chest == -1 && Player.talkNPC < 0 && backpackEnabled)
-            {
-                //Player.chest = -5;
-            }
+
             if (!hasPrinted)
             {
                 //Player.inventory[4] = new Item(ModContent.ItemType<QuillRain>());
@@ -141,7 +118,7 @@ namespace QoLPrime.Content.Players
             {
                 updateCounter = 0;
             }
-            firstRun = false;
+
         }
         public static int? GetIndexOfItemInInventory(ModItem item, Player player)
         {

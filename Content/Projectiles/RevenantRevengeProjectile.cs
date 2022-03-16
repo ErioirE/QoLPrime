@@ -126,7 +126,7 @@ namespace QoLPrime.Content.Projectiles
                 }
                 catch (IndexOutOfRangeException ex)
                 {
-
+                    Console.WriteLine(ex);
                 }
                 if (tileAtLocation.Value.TileType != 0 && Main.tileSolid[tileAtLocation.Value.TileType])
                 {
