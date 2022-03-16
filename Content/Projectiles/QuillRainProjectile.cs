@@ -18,7 +18,7 @@ namespace QoLPrime.Content.Projectiles
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Quill Rain Projectile"); // Name of the projectile. It can be appear in chat
-            ProjectileID.Sets.CountsAsHoming[Projectile.type] = true; // Tell the game that it is a homing projectile
+            ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true; // Tell the game that it is a homing projectile
 
         }
         public override string Texture => "QoLPrime/Assets/Textures/Items/Quill";

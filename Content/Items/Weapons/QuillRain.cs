@@ -14,6 +14,7 @@ namespace QoLPrime.Items
     public class QuillRain : ModItem
     {
         public int BatsSlain = 0;
+        private TagCompound _tagCompound;
         private int killsRequired = 100;
         public override void SetStaticDefaults()
         {
@@ -49,11 +50,11 @@ namespace QoLPrime.Items
             // This Ammo is nonspecific. I want to modify what it shoots, however.
             //Item.useAmmo = ModContent.ItemType<ExampleCustomAmmo>();
         }
-        public override bool ConsumeAmmo(Player player)
+        public override bool CanConsumeAmmo(Player player)
         {
             return Main.rand.NextFloat() >= .55f;
         }
-        public override bool Shoot(Player player, ProjectileSource_Item_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
 
             PlayerModification.mostRecentQuillRain = this;
@@ -131,17 +132,17 @@ namespace QoLPrime.Items
             clone.BatsSlain = BatsSlain;
             return clone;
         }
-        public override void Load(TagCompound tag)
+        public override void LoadData(TagCompound tag)
         {
             BatsSlain = tag.GetInt("BatsSlain");
         }
 
-        public override TagCompound Save()
+        public override void SaveData(TagCompound tag)
         {
-            return new TagCompound
-        {
-            { "BatsSlain", BatsSlain}
-        };
+            _tagCompound = new TagCompound
+            {
+                { "BatsSlain", BatsSlain}
+            };
         }
 
         public override void NetSend(BinaryWriter writer)

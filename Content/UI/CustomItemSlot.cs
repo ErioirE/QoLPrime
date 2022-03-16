@@ -272,7 +272,7 @@ namespace QoLPrime.Content.UI
                                     if (item.material)
                                         Main.cursorOverride = 9;
                                 }
-                                else if ((Main.player[Main.myPlayer].chest != -1  && ChestUI.TryPlacingInChest(item, justCheck: true))|| (PlayerModification.backpackEnabled && Main.player[Main.myPlayer].chest == -1 && DrawCustomChestUI.TryPlacingInChest(item,PlayerModification.backpack,true)))
+                                else if ((Main.player[Main.myPlayer].chest != -1  && ChestUI.TryPlacingInChest(item, justCheck: true, 0))|| (PlayerModification.backpackEnabled && Main.player[Main.myPlayer].chest == -1 && DrawCustomChestUI.TryPlacingInChest(item,PlayerModification.backpack,true)))
                                 {
                                     Main.cursorOverride = 9;
                                 }
@@ -340,7 +340,7 @@ namespace QoLPrime.Content.UI
                             }
                             else if (Main.player[Main.myPlayer].chest != -1)
                             {
-                                if (ChestUI.TryPlacingInChest(item, justCheck: true))
+                                if (ChestUI.TryPlacingInChest(item, justCheck: true, 0))
                                     Main.cursorOverride = 9;
                             }
                             else
@@ -471,7 +471,7 @@ namespace QoLPrime.Content.UI
                     }
                     else
                     {
-                        ChestUI.TryPlacingInChest(inv[slot], justCheck: false);
+                        ChestUI.TryPlacingInChest(inv[slot], justCheck: false,0);
                     }
                     
                 }
@@ -537,7 +537,7 @@ namespace QoLPrime.Content.UI
                     }
                     if (inv[slot].type == ItemID.None || inv[slot].stack < 1)
                         inv[slot] = new Item();
-                    if (Main.mouseItem.IsTheSameAs(inv[slot]))
+                    if (Main.mouseItem.type ==inv[slot].type)
                     {
                         Utils.Swap(ref inv[slot].favorited, ref Main.mouseItem.favorited);
                         if (inv[slot].stack != inv[slot].maxStack && Main.mouseItem.stack != Main.mouseItem.maxStack)
@@ -566,7 +566,7 @@ namespace QoLPrime.Content.UI
                         NetMessage.SendData(32, -1, -1, null, player.chest, slot);
                     break;
                 case 1:
-                    if (Main.mouseItem.stack == 1 && Main.mouseItem.type > 0 && inv[slot].type > 0 && inv[slot].IsNotTheSameAs(Main.mouseItem) && (context != 11 || Main.mouseItem.FitsAccessoryVanitySlot))
+                    if (Main.mouseItem.stack == 1 && Main.mouseItem.type > 0 && inv[slot].type > 0 && inv[slot].type != Main.mouseItem.type && (context != 11 || Main.mouseItem.FitsAccessoryVanitySlot))
                     {
                         Utils.Swap(ref inv[slot], ref Main.mouseItem);
                         SoundEngine.PlaySound(7);
@@ -883,7 +883,7 @@ namespace QoLPrime.Content.UI
                                 return Lang.misc[75].Value;
                             if (Main.player[Main.myPlayer].chest != -1)
                             {
-                                if (ChestUI.TryPlacingInChest(inv[slot], justCheck: true))
+                                if (ChestUI.TryPlacingInChest(inv[slot], justCheck: true,0))
                                     return Lang.misc[76].Value;
 
                                 break;
@@ -1080,7 +1080,7 @@ namespace QoLPrime.Content.UI
                 if (context == 4 && inv[slot].maxStack <= 1)
                     flag = false;
 
-                if (flag && (Main.mouseItem.IsTheSameAs(inv[slot]) || Main.mouseItem.type == 0) && (Main.mouseItem.stack < Main.mouseItem.maxStack || Main.mouseItem.type == 0))
+                if (flag && (Main.mouseItem.type == inv[slot].type || Main.mouseItem.type == 0) && (Main.mouseItem.stack < Main.mouseItem.maxStack || Main.mouseItem.type == 0))
                 {
                     PickupItemIntoMouse(inv, context, slot, player);
                     SoundEngine.PlaySound(12);
@@ -1181,7 +1181,7 @@ namespace QoLPrime.Content.UI
                     {
                         if (Main.mouseRightRelease)
                         {
-                            player.OpenHerbBag();
+                            player.OpenHerbBag(inv[slot].type);
                             if (ItemLoader.ConsumeItem(inv[slot], player))
                                 inv[slot].stack--;
 
@@ -1198,7 +1198,7 @@ namespace QoLPrime.Content.UI
                     {
                         if (Main.mouseRightRelease)
                         {
-                            player.OpenCanofWorms();
+                            player.OpenCanofWorms(inv[slot].type);
                             inv[slot].stack--;
                             if (inv[slot].stack == 0)
                                 inv[slot].SetDefaults();
@@ -1213,7 +1213,7 @@ namespace QoLPrime.Content.UI
                     {
                         if (Main.mouseRightRelease)
                         {
-                            player.OpenOyster();
+                            player.OpenOyster(inv[slot].type);
                             inv[slot].stack--;
                             if (inv[slot].stack == 0)
                                 inv[slot].SetDefaults();
@@ -1228,7 +1228,7 @@ namespace QoLPrime.Content.UI
                     {
                         if (Main.mouseRightRelease)
                         {
-                            player.OpenCapricornLegs();
+                            player.OpenCapricornLegs(inv[slot].type);
                             inv[slot].stack--;
                             if (inv[slot].stack == 0)
                                 inv[slot].SetDefaults();
@@ -1243,7 +1243,7 @@ namespace QoLPrime.Content.UI
                     {
                         if (Main.mouseRightRelease)
                         {
-                            player.OpenCapricornTail();
+                            player.OpenCapricornTail(inv[slot].type);
                             inv[slot].stack--;
                             if (inv[slot].stack == 0)
                                 inv[slot].SetDefaults();
@@ -1267,7 +1267,7 @@ namespace QoLPrime.Content.UI
                             SoundEngine.PlaySound(7);
                             Main.stackSplit = 30;
                             Main.mouseRightRelease = false;
-                            player.OpenGoodieBag();
+                            player.OpenGoodieBag(inv[slot].type);
                             Recipe.FindRecipes();
                         }
                     }
@@ -1284,7 +1284,7 @@ namespace QoLPrime.Content.UI
                             SoundEngine.PlaySound(7);
                             Main.stackSplit = 30;
                             Main.mouseRightRelease = false;
-                            player.OpenLockBox();
+                            player.OpenLockBox(inv[slot].type);
                             Recipe.FindRecipes();
                         }
                     }
@@ -1299,7 +1299,7 @@ namespace QoLPrime.Content.UI
                             SoundEngine.PlaySound(7);
                             Main.stackSplit = 30;
                             Main.mouseRightRelease = false;
-                            player.OpenShadowLockbox();
+                            player.OpenShadowLockbox(0);
                             Recipe.FindRecipes();
                         }
                     }
@@ -1316,7 +1316,7 @@ namespace QoLPrime.Content.UI
                             SoundEngine.PlaySound(7);
                             Main.stackSplit = 30;
                             Main.mouseRightRelease = false;
-                            player.openPresent();
+                            player.OpenPresent(inv[slot].type);
                             Recipe.FindRecipes();
                         }
                     }
@@ -1376,7 +1376,7 @@ namespace QoLPrime.Content.UI
                             }
                         }
 
-                        if (!flag2 || !ItemLoader.CanEquipAccessory(inv[slot], slot - 10))
+                        if (!flag2 || !ItemLoader.CanEquipAccessory(inv[slot], slot - 10,true))
                             break;
 
                         Utils.Swap(ref inv[slot], ref inv[slot - 10]);
@@ -1453,7 +1453,7 @@ namespace QoLPrime.Content.UI
 
             _ = Main.instance.shop[Main.npcShop];
             bool flag = (Main.mouseRight && rightClickIsValid) || (Main.mouseLeft && leftClickIsValid);
-            if (!(Main.stackSplit <= 1 && flag) || inv[slot].type <= 0 || (!Main.mouseItem.IsTheSameAs(inv[slot]) && Main.mouseItem.type != 0))
+            if (!(Main.stackSplit <= 1 && flag) || inv[slot].type <= 0 || (Main.mouseItem.type !=inv[slot].type) && Main.mouseItem.type != 0)
                 return;
 
             int num = Main.superFastStack + 1;
@@ -2170,11 +2170,11 @@ namespace QoLPrime.Content.UI
 
             if (slot != -1)
             {
-                if (itemCollection[slot].IsTheSameAs(item))
+                if (itemCollection[slot].type == item.type)
                     return false;
 
                 if (itemCollection[slot].wingSlot > 0 && item.wingSlot > 0)
-                    return !ItemLoader.CanEquipAccessory(item, slot);
+                    return !ItemLoader.CanEquipAccessory(item, slot,true);
             }
 
             for (int i = 0; i < itemCollection.Length; i++)
@@ -2188,11 +2188,11 @@ namespace QoLPrime.Content.UI
                         return true;
                 }
 
-                if (item.IsTheSameAs(itemCollection[i]))
+                if (item.type ==(itemCollection[i].type))
                     return true;
             }
 
-            return !ItemLoader.CanEquipAccessory(item, slot);
+            return !ItemLoader.CanEquipAccessory(item, slot, true);
         }
 
         private static Item DyeSwap(Item item, out bool success)
@@ -2273,7 +2273,7 @@ namespace QoLPrime.Content.UI
 
                 for (int j = 0; j < player.armor.Length; j++)
                 {
-                    if (item.IsTheSameAs(player.armor[j]))
+                    if (item.type ==(player.armor[j].type))
                         accSlotToSwapTo = j - 3;
 
                     if (j < 10 && item.wingSlot > 0 && player.armor[j].wingSlot > 0)
@@ -2283,7 +2283,7 @@ namespace QoLPrime.Content.UI
                 for (int k = 0; k < num2; k++)
                 {
                     int index = 3 + (accSlotToSwapTo + num2) % num2;
-                    if (ItemLoader.CanEquipAccessory(item, index))
+                    if (ItemLoader.CanEquipAccessory(item, index, true))
                     {
                         accSlotToSwapTo = index - 3;
                         break;
@@ -2302,11 +2302,11 @@ namespace QoLPrime.Content.UI
 
                 for (int k = 0; k < player.armor.Length; k++)
                 {
-                    if (item.IsTheSameAs(player.armor[k]))
+                    if (item.type == (player.armor[k].type))
                         num3 = k;
                 }
 
-                if (!ItemLoader.CanEquipAccessory(item, num3))
+                if (!ItemLoader.CanEquipAccessory(item, num3, true))
                     return item;
 
                 result = player.armor[num3].Clone();

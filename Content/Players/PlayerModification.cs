@@ -97,13 +97,13 @@ namespace QoLPrime.Content.Players
                         if (k >= 0 && k < Main.maxTilesY)
                         {
                             int num5 = 0;
-                            if (Main.tile[j, k].type == 29)
+                            if (Main.tile[j, k].TileType == 29)
                                 num5 = -2;
-                            else if (Main.tile[j, k].type == 97)
+                            else if (Main.tile[j, k].TileType == 97)
                                 num5 = -3;
-                            else if (Main.tile[j, k].type == 463)
+                            else if (Main.tile[j, k].TileType == 463)
                                 num5 = -4;
-                            else if (Main.tile[j, k].type == 491)
+                            else if (Main.tile[j, k].TileType == 491)
                                 num5 = -5;
 
                             if (num5 < 0 && (new Vector2(j * 16 + 8, k * 16 + 8) - self.Center).Length() < 250f)

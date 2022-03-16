@@ -458,7 +458,7 @@ namespace QoLPrime.Content.UI
 
 
 
-                                if (Main.chest[player.chest].item[i].stack < Main.chest[player.chest].item[i].maxStack && PlayerModification.backpack.item[num].IsTheSameAs(Main.chest[player.chest].item[i]))
+                                if (Main.chest[player.chest].item[i].stack < Main.chest[player.chest].item[i].maxStack && PlayerModification.backpack.item[num].type ==(Main.chest[player.chest].item[i].type))
                                 {
                                     int num5 = PlayerModification.backpack.item[num].stack;
                                     if (PlayerModification.backpack.item[num].stack + Main.chest[player.chest].item[i].stack > Main.chest[player.chest].item[i].maxStack)
@@ -1003,7 +1003,7 @@ namespace QoLPrime.Content.UI
             {
                 for (int i = 0; i < 40; i++)
                 {
-                    if (chestinv[i].stack >= chestinv[i].maxStack || !I.IsTheSameAs(chestinv[i]))
+                    if (chestinv[i].stack >= chestinv[i].maxStack || I.type !=(chestinv[i].type))
                         continue;
 
                     int num = I.stack;
@@ -1106,7 +1106,7 @@ namespace QoLPrime.Content.UI
             {
                 for (int num = 49; num >= 0; num--)
                 {
-                    if (inventory[num].stack < inventory[num].maxStack && item2.IsTheSameAs(inventory[num]))
+                    if (inventory[num].stack < inventory[num].maxStack && item2.type == (inventory[num].type))
                     {
                         int num2 = item2.stack;
                         if (item2.stack + inventory[num].stack > inventory[num].maxStack)

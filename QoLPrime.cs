@@ -131,8 +131,8 @@ namespace QoLPrime
             quickStackHotkey = KeybindLoader.RegisterKeybind(this,"Quick Stack/Quick Stack all", "OemSemicolon");
             backpackToggle = KeybindLoader.RegisterKeybind(this,"Toggle Backpack", "OemTilde");
             printSpawnRate = KeybindLoader.RegisterKeybind(this,"Print Spawn Rate", "OemBackslash");
-            depositAllHotkey = KeybindLoader.RegisterKeybind(this,"Deposit All", "");
-            lootAllHotkey = KeybindLoader.RegisterKeybind(this,"Loot All", "");
+            depositAllHotkey = KeybindLoader.RegisterKeybind(this,"Deposit All", "OemNone");
+            lootAllHotkey = KeybindLoader.RegisterKeybind(this,"Loot All", "OemNone");
             if (backpackPublic == null)
             {
                 ///backpackPublic = new Dictionary<string, Item[]>();

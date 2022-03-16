@@ -28,7 +28,7 @@ namespace QoLPrime.Content.Projectiles
         public override void SetStaticDefaults()
         {
             DisplayName.SetDefault("Revenent's Revenge Projectile"); // Name of the projectile. It can be appear in chat
-            ProjectileID.Sets.CountsAsHoming[Projectile.type] = true; // Tell the game that it is a homing projectile
+            ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true; // Tell the game that it is a homing projectile
 
         }
         public override string Texture => "QoLPrime/Assets/Textures/Items/Revenant_Arrow";
@@ -117,7 +117,7 @@ namespace QoLPrime.Content.Projectiles
                         maxDetectRadius = 500;
                     }
                 }
-                Tile tileAtLocation = null;
+                Tile? tileAtLocation = null;
                 try
                 {
                     var pos = Projectile.position;
@@ -128,7 +128,7 @@ namespace QoLPrime.Content.Projectiles
                 {
 
                 }
-                if (tileAtLocation.CollisionType > 0)
+                if (tileAtLocation.Value.BlockType > 0)
                 {
 
                     collisionCount++;
