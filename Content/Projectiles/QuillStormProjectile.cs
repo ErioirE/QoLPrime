@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using QoLPrime.Content.Players;
-using QoLPrime.Items;
 using System;
 using Terraria;
 using Terraria.ID;
@@ -10,7 +8,7 @@ namespace QoLPrime.Content.Projectiles
 {
     // This Example show how to implement simple homing projectile
     // Can be tested with ExampleCustomAmmoGun
-    public class QuillRainProjectile : ModProjectile
+    public class QuillStormProjectile : ModProjectile
     {
         float speedMod = 1f;
 
@@ -18,7 +16,7 @@ namespace QoLPrime.Content.Projectiles
         bool hasAccelerated = false;
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Quill Rain Projectile"); // Name of the projectile. It can be appear in chat
+            DisplayName.SetDefault("Quill Storm Projectile"); // Name of the projectile. It can be appear in chat
             ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true; // Tell the game that it is a homing projectile
 
         }
@@ -46,59 +44,65 @@ namespace QoLPrime.Content.Projectiles
             NPC closest = FindClosestNPC(75);
             float projSpeed = 10f;
 
-            if (closest == null)
+
+
+
+            if (!hasAccelerated)
             {
-
-
-                if (!hasAccelerated)
+                Projectile.damage = (int)Math.Round(Projectile.damage * 0.5);
+                Projectile.knockBack = (int)Math.Round(Projectile.knockBack * 0.5);
+                int invert = rand.Next(0, 1);
+                if (invert > 0)
                 {
-                    Projectile.damage = (Projectile.damage / 2);
-                    Projectile.knockBack = Projectile.knockBack / 2;
-                    int invert = rand.Next(0, 1);
-                    if (invert > 0)
-                    {
-                        speedMod = (5f + (float)rand.NextDouble()) / 5;
+                    speedMod = (5f + (float)rand.NextDouble()) / 5;
 
-                    }
-                    else
-                    {
-                        speedMod = (5f - (float)rand.NextDouble()) / 5;
-                    }
-                    Projectile.velocity.X *= speedMod;
-                    invert = rand.Next(0, 1);
-                    if (invert > 0)
-                    {
-                        speedMod = (5f + (float)rand.NextDouble()) / 5;
-
-                    }
-                    else
-                    {
-                        speedMod = (5f - (float)rand.NextDouble()) / 5;
-                    }
-                    Projectile.velocity.Y *= speedMod;
-                    Projectile.direction = (int)((float)Projectile.direction * speedMod);
-                    hasAccelerated = true;
                 }
-                return;
+                else
+                {
+                    speedMod = (5f - (float)rand.NextDouble()) / 5;
+                }
+                Projectile.velocity.X *= speedMod;
+                invert = rand.Next(0, 1);
+                if (invert > 0)
+                {
+                    speedMod = (5f + (float)rand.NextDouble()) / 5;
+
+                }
+                else
+                {
+                    speedMod = (5f - (float)rand.NextDouble()) / 5;
+                }
+                Projectile.velocity.Y *= speedMod;
+                Projectile.direction = (int)((float)Projectile.direction * speedMod);
+                hasAccelerated = true;
             }
-            else
+
+
+
+            if (!boosted)
             {
-                if (!boosted)
-                {
-                    Projectile.damage += 2;
-                    boosted = true;
+                
+                boosted = true;
+            }
+
+
+            // If found, change the velocity of the projectile and turn it in the direction of the target
+            // Use the SafeNormalize extension method to avoid NaNs returned by Vector2.Normalize when the vector is zero 
+            try
+            {
+                if (closest != null) {
+                    Vector2 target = (closest.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
+                    Projectile.velocity = target * projSpeed;
+                    float scaleFactor = Projectile.velocity.Length();
+                    float targetAngle = Projectile.Center.AngleTo(target);
+                    Vector2 thing1 = (Projectile.velocity.ToRotation().AngleTowards(targetAngle, (float)Math.PI / 180f).ToRotationVector2() * scaleFactor);
+
+                    Projectile.rotation = thing1.ToRotation() + 1.5708f;
                 }
-
-
-                // If found, change the velocity of the projectile and turn it in the direction of the target
-                // Use the SafeNormalize extension method to avoid NaNs returned by Vector2.Normalize when the vector is zero 
-                Vector2 target = (closest.Center - Projectile.Center).SafeNormalize(Vector2.Zero);
-                Projectile.velocity = target * projSpeed;
-                float scaleFactor = Projectile.velocity.Length();
-                float targetAngle = Projectile.Center.AngleTo(target);
-                Vector2 thing1 = (Projectile.velocity.ToRotation().AngleTowards(targetAngle, (float)Math.PI / 180f).ToRotationVector2() * scaleFactor);
-
-                Projectile.rotation = thing1.ToRotation() + 1.5708f;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
             }
             // The speed at which the projectile moves towards the target
             // Trying to find NPC closest to the projectile
@@ -111,17 +115,8 @@ namespace QoLPrime.Content.Projectiles
         }
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
-            if (target.aiStyle == NPCAIStyleID.Bat)
-            {
-                var maxLife = target.lifeMax;
-                target.AddBuff(BuffID.Ichor, 60);
-                target.AddBuff(BuffID.Poisoned, 250);
-                if (target.life <= 0)
-                {
-                    PlayerModification.mostRecentQuillRain.BatsSlain += 1 + ((int)Math.Round((double)maxLife / 100));
-                }
-            }
-
+            target.AddBuff(BuffID.Ichor, 60);
+            target.AddBuff(BuffID.Poisoned, 250);
         }
         public NPC FindClosestNPC(float maxDetectDistance)
         {
@@ -141,7 +136,7 @@ namespace QoLPrime.Content.Projectiles
                 // 4. can take damage (e.g. moonlord core after all it's parts are downed)
                 // 5. hostile (!friendly)
                 // 6. not immortal (e.g. not a target dummy)
-                if (target.CanBeChasedBy() && target.aiStyle == NPCAIStyleID.Bat)
+                if (target.CanBeChasedBy())
                 {
                     // The DistanceSquared function returns a squared distance between 2 points, skipping relatively expensive square root calculations
                     float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, Projectile.Center);

@@ -1,18 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using QoLPrime.Content.Buffs;
-using QoLPrime.Content.Players;
-using QoLPrime.Content.UI;
-using QoLPrime.Items;
-using System.Collections.Generic;
-using Terraria;
+﻿using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent;
-using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
-using Terraria.UI;
 using static Terraria.Player;
 
 namespace QoLPrime
@@ -23,16 +12,16 @@ namespace QoLPrime
         public static int myPlayer = Main.myPlayer;
 
 
-        
-
-      
-       
 
 
 
-        
-       
-        
+
+
+
+
+
+
+
         public static NetworkText DeathReasonHijack(On.Terraria.DataStructures.PlayerDeathReason.orig_GetDeathText orig, PlayerDeathReason self, string deadPlayerName)
         {
             int roll = Main.rand.Next(QoLPrime.customDeathMessages.Length);
@@ -82,6 +71,6 @@ namespace QoLPrime
             }
             return count;
         }
-      
+
     }
 }

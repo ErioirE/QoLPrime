@@ -1,17 +1,11 @@
 using Microsoft.Xna.Framework.Graphics;
-using MonoMod.RuntimeDetour;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using QoLPrime.Content.Players;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 
 namespace QoLPrime
 {
@@ -23,7 +17,7 @@ namespace QoLPrime
         static Texture2D value;
         public static int invBottom;
         public static int invBottomOffset = 165;
-        
+
         public static ModKeybind printSpawnRate;
         public static ModKeybind quickStackHotkey;
         public static ModKeybind depositAllHotkey;
@@ -49,7 +43,7 @@ namespace QoLPrime
                 value = TextureAssets.InventoryBack.Value;
                 invBottom = (int)((value.Bounds.Height * 6.5f) * Main.inventoryScale);
             }
-            
+
             if (!Directory.Exists(Path.GetDirectoryName(deathMessagePath)))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(deathMessagePath));
@@ -67,7 +61,7 @@ namespace QoLPrime
             string deathMessagesConfig = File.ReadAllText(deathMessagePath);
             customDeathMessages = Newtonsoft.Json.JsonConvert.DeserializeObject<string[]>(deathMessagesConfig);
             QoLPrime.Instance = this;
-            
+
             /*if (backpackPublic == null)
             {
                     backpackPublic = new Dictionary<string, Item[]>();
@@ -81,12 +75,12 @@ namespace QoLPrime
                     backpackPublic[LastPlayer] = itemsToLoad.ToArray();
             }*/
         }
-        
+
         //TODO: Introduce OOP packets into tML, to avoid this god-class level hardcode.
         public override void HandlePacket(BinaryReader reader, int whoAmI)
         {
             ExampleModMessageType msgType = (ExampleModMessageType)reader.ReadByte();
-            
+
 
         }
         public static void setSpawnRateLabel(string label)
@@ -107,18 +101,18 @@ namespace QoLPrime
         }
         public override void Load()
         {
-            
-            quickStackHotkey = KeybindLoader.RegisterKeybind(this,"Quick Stack/Quick Stack all", "OemSemicolon");
-            
-            printSpawnRate = KeybindLoader.RegisterKeybind(this,"Print Spawn Rate", "OemBackslash");
-            depositAllHotkey = KeybindLoader.RegisterKeybind(this,"Deposit All", "OemNone");
-            lootAllHotkey = KeybindLoader.RegisterKeybind(this,"Loot All", "OemNone");
-            
+
+            quickStackHotkey = KeybindLoader.RegisterKeybind(this, "Quick Stack/Quick Stack all", "OemSemicolon");
+
+            printSpawnRate = KeybindLoader.RegisterKeybind(this, "Print Spawn Rate", "OemBackslash");
+            depositAllHotkey = KeybindLoader.RegisterKeybind(this, "Deposit All", "OemNone");
+            lootAllHotkey = KeybindLoader.RegisterKeybind(this, "Loot All", "OemNone");
+
             MonoModHooks.RequestNativeAccess();
 
             //Hook chestRangeHook = new Hook(typeof(Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
             //chestRangeHook.Apply();
-            
+
             //Hook ChestUIDrawHook = new Hook(typeof(ChestUI).GetMethod("Draw"), typeof(QoLPrime).GetMethod("ChestUIDrawHijack"));
             //On.Terraria.Player.HandleBeingInChestRange += PlayerModification.chestRangeHijack;
 

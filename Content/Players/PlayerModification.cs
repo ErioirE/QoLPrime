@@ -1,16 +1,10 @@
-﻿using Microsoft.Xna.Framework;
-using QoLPrime.Content.Buffs;
-using QoLPrime.Content.UI;
+﻿using QoLPrime.Content.Buffs;
 using QoLPrime.Items;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Terraria;
-using Terraria.Audio;
 using Terraria.GameInput;
-using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.ModLoader.IO;
 using Terraria.UI;
 
 namespace QoLPrime.Content.Players
@@ -69,7 +63,7 @@ namespace QoLPrime.Content.Players
 
 			}
         }*/
-        
+
 
         public override void PreUpdate()
         {
@@ -82,7 +76,7 @@ namespace QoLPrime.Content.Players
                 Main.AnglerQuestSwap();
                 Main.anglerQuestFinished = false;
             }
-           
+
 
 
 
@@ -138,7 +132,7 @@ namespace QoLPrime.Content.Players
             //DebugHotkeys(triggersSet);
 
 
-            
+
             if (QoLPrime.printSpawnRate.JustReleased)
             {
                 Main.NewText($"{QoLPrime.checkSpawnRate}");

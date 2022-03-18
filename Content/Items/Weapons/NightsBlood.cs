@@ -123,7 +123,14 @@ namespace QoLPrime.Items
 
 
         }
-
+        public override void AddRecipes()
+        {
+            Recipe recipe = CreateRecipe();            
+            recipe.AddIngredient(ItemID.RainbowBrick, 100);
+            recipe.AddIngredient(ModContent.ItemType<QuillStorm>(), 1);            
+            recipe.AddTile(TileID.MythrilAnvil);
+            recipe.Register();
+        }
         public override void UpdateInventory(Player player)
         {
             if (player.statMana - cost < 0)

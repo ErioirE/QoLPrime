@@ -20,7 +20,7 @@ namespace QoLPrime.Content.Buffs
             Description.SetDefault("Firing Night's blood consumes a growing amout of mana per shot, and gains bonus damage proportional to the cost. Consumes LIFE once mana is gone!");
 
             Main.buffNoTimeDisplay[Type] = false;
-            
+
             Main.debuff[Type] = false; //Add this so the nurse doesn't remove the buff when healing
 
         }
