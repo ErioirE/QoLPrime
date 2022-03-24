@@ -71,9 +71,15 @@ namespace QoLPrime.Items
                 int diff = (cost - player.statMana);
                 player.statMana = 0;
                 player.manaRegenDelay = 200;
-                if (player.statLife - diff >= 1)
+                int lifecost = diff/2 ;
+                if (player.statLife - lifecost >= 1)
                 {
-                    player.statLife -= diff;
+                    
+                    if (lifecost > 50)
+                    {
+                        lifecost = 50;
+                    }                    
+                    player.statLife -= lifecost;
                 }
                 else
                 {
@@ -93,7 +99,7 @@ namespace QoLPrime.Items
 
             scaleToAddToIcon = 0.05f * RavenousBuff.counter;
 
-            damage += cost;
+            damage += cost*4;
             RavenousBuff.counter++;
 
             type = ModContent.ProjectileType<Content.Projectiles.NightsBloodProjectile>(); // or ProjectileID.FireArrow;

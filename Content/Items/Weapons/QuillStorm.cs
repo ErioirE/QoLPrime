@@ -111,11 +111,7 @@ namespace QoLPrime.Items
 
         public override void AddRecipes()
         {
-            Recipe recipe = CreateRecipe();
-            recipe.AddIngredient(ItemID.WoodenBow, 1);
-            recipe.AddIngredient(ItemID.RainCloud, 20);
-            recipe.AddIngredient(ItemID.Stinger, 5);
-            recipe.Register();
+
         }
 
         public override ModItem Clone(Item item)
