@@ -35,7 +35,7 @@ namespace QoLPrime.Items
             Item.UseSound = SoundID.Item17;
             Item.rare = ItemRarityID.Green;
             Item.autoReuse = true;
-            Item.damage = 8;
+            Item.damage = 10;
             Item.DamageType = DamageClass.Ranged;
             Item.width = 26;
             Item.height = 26;

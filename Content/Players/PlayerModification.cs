@@ -127,6 +127,19 @@ namespace QoLPrime.Content.Players
             }
             return null;
         }
+        public static int? GetIndexOfItemInInventory(Item item, Player player)
+        {
+            int i = 0;
+            foreach (Item invItem in player.inventory)
+            {
+                if (invItem == item)
+                {
+                    return i;
+                }
+                i++;
+            }
+            return null;
+        }
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
             //DebugHotkeys(triggersSet);

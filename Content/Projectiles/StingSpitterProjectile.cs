@@ -24,7 +24,7 @@ namespace QoLPrime.Content.Projectiles
         Vector2 originalVelocity;
         static float defaultDetectRadius = 95f;
         float maxDetectRadius = defaultDetectRadius; // The maximum radius at which a projectile can detect a target
-        int lastHit = 0;
+        NPC lastHit = null;
         Random rand = new Random();
         public override void SetStaticDefaults()
         {
@@ -81,7 +81,7 @@ namespace QoLPrime.Content.Projectiles
                 Projectile.damage = (int)Math.Round(0.95 * Projectile.damage);
                 if (closestNPC != null)
                 {
-                    lastHit = closestNPC.life;
+                    lastHit = closestNPC;
                 }
 
                 Projectile.velocity.X *= (float)rand.Next(2, 4);
@@ -147,8 +147,8 @@ namespace QoLPrime.Content.Projectiles
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             this.Projectile.timeLeft += damage / 2;
-            target.AddBuff(ModContent.BuffType<RavenousBuff>(),20,true);
-            target.AddBuff(BuffID.Venom, 250);
+            //target.AddBuff(ModContent.BuffType<RavenousBuff>(),20,true);
+            target.AddBuff(BuffID.Poisoned, 250);
         }
         public void AddLightToScale(Vector2 position, Vector3 rgb, float multiplier)
         {
@@ -157,7 +157,7 @@ namespace QoLPrime.Content.Projectiles
         }
         // Finding the closest NPC to attack within maxDetectDistance range
         // If not found then returns null
-        public NPC FindClosestNPC(float maxDetectDistance, int lastHit)
+        public NPC FindClosestNPC(float maxDetectDistance, NPC lastHit)
         {
             NPC closestNPC = null;
 
@@ -181,7 +181,7 @@ namespace QoLPrime.Content.Projectiles
                     float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, Projectile.Center);
 
                     // Check if it is within the radius
-                    if (!target.HasBuff(ModContent.BuffType<RavenousBuff>()) && sqrDistanceToTarget < sqrMaxDetectDistance)
+                    if (sqrDistanceToTarget <= sqrMaxDetectDistance && target != lastHit)
                     {
                         sqrMaxDetectDistance = sqrDistanceToTarget;
 

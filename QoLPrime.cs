@@ -1,7 +1,9 @@
 using Microsoft.Xna.Framework.Graphics;
+using MonoMod.RuntimeDetour;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using Terraria;
 using Terraria.GameContent;
@@ -109,7 +111,8 @@ namespace QoLPrime
             lootAllHotkey = KeybindLoader.RegisterKeybind(this, "Loot All", "OemNone");
 
             MonoModHooks.RequestNativeAccess();
-
+            Hook drawNpcHook = new Hook(typeof(Main).GetMethod("DrawNPCs", BindingFlags.NonPublic | BindingFlags.Instance), typeof(Detours).GetMethod("drawNpcsHijack"));
+            drawNpcHook.Apply();
             //Hook chestRangeHook = new Hook(typeof(Player).GetMethod("HandleBeingInChestRange", BindingFlags.NonPublic | BindingFlags.Instance), typeof(PlayerModification).GetMethod("chestRangeHijack"));
             //chestRangeHook.Apply();
 
@@ -117,7 +120,7 @@ namespace QoLPrime
             //On.Terraria.Player.HandleBeingInChestRange += PlayerModification.chestRangeHijack;
 
 
-            On.Terraria.DataStructures.PlayerDeathReason.GetDeathText += Detours.DeathReasonHijack;
+            //On.Terraria.DataStructures.PlayerDeathReason.GetDeathText += Detours.DeathReasonHijack;
 
         }
 

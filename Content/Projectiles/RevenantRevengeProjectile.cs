@@ -23,7 +23,7 @@ namespace QoLPrime.Content.Projectiles
         Vector2 originalVelocity;
         static float defaultDetectRadius = 65f;
         float maxDetectRadius = defaultDetectRadius; // The maximum radius at which a projectile can detect a target
-        int lastHit = 0;
+        NPC lastHit = null;
         Random rand = new Random();
         public override void SetStaticDefaults()
         {
@@ -92,7 +92,7 @@ namespace QoLPrime.Content.Projectiles
                 Projectile.damage = (int)Math.Round(0.95 * Projectile.damage);
                 if (closestNPC != null)
                 {
-                    lastHit = closestNPC.life;
+                    lastHit = closestNPC;
                 }
                 speedMod = reduceSpeed(speedMod, 0.5f, 0.5f);
                 Projectile.velocity.X *= (float)rand.Next(2, 4);
@@ -207,7 +207,7 @@ namespace QoLPrime.Content.Projectiles
         }
         // Finding the closest NPC to attack within maxDetectDistance range
         // If not found then returns null
-        public NPC FindClosestNPC(float maxDetectDistance, int lastHit)
+        public NPC FindClosestNPC(float maxDetectDistance, NPC lastHit)
         {
             NPC closestNPC = null;
 
@@ -231,7 +231,7 @@ namespace QoLPrime.Content.Projectiles
                     float sqrDistanceToTarget = Vector2.DistanceSquared(target.Center, Projectile.Center);
 
                     // Check if it is within the radius
-                    if (target.life != lastHit && sqrDistanceToTarget < sqrMaxDetectDistance)
+                    if (target != lastHit && sqrDistanceToTarget <= sqrMaxDetectDistance)
                     {
                         sqrMaxDetectDistance = sqrDistanceToTarget;
                         bonus = (int)((target.lifeMax / 500) * 5);
